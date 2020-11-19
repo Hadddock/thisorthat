@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class Thisorthat_Test {
 Maze currentMaze;
+Game currentGame;
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -57,6 +58,8 @@ Maze currentMaze;
 		int testXPositon = 1;
 		boolean testKeyStatus = false;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
+		//TODO replace null with the test display variable
+		currentGame = new Game(currentMaze, null);
 	}
 
 	@AfterEach
@@ -80,10 +83,99 @@ Maze currentMaze;
 	
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
+	@Test
+	void testPromptMovement() {
+		currentGame.promptMovement();
+	}
 	
+	@Test
+	void testRecieveMovementSelectionUp() {
+		currentGame.receiveMovementSelection(0);
+		Assert.assertEquals([0][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+	}
+	
+	@Test
+	void testRecieveMovementSelectionLeft() {
+		currentGame.receiveMovementSelection(3);
+		Assert.assertEquals([1][0], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+	}
+	
+	@Test
+	void testRecieveMovementSelectionRight() {
+		currentGame.receiveMovementSelection(1);
+		Assert.assertEquals([1][2], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+	}
+	
+	@Test
+	void testRecieveMovementSelectionDownLocked() {
+		currentGame.receiveMovementSelection(2);
+		Assert.assertEquals([1][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+	}
+	
+	@Test
+	void testRecieveMovementSelectionDownUnlocked() {
+		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
+		currentMaze.obtainKey();
+		currentGame.receiveMovementSelection(2);
+		Assert.assertEquals([2][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+	}
+
+	@Test
+	void testPromptQuestionSelectionUnlocked1() {
+		promptQuestionSelection(0, 0);
+	}
+	
+	@Test
+	void testPromptQuestionSelectionUnlocked2() {
+		promptQuestionSelection(1, 0);
+	}
+	
+	@Test
+	void testPromptQuestionSelectionUnlocked3() {
+		promptQuestionSelection(3, 0);
+	}
+	
+	@Test
+	void testPromptQuestionSelectionLocked() {
+		promptQuestionSelection(2, 1);
+	}
+	
+	void promptQuestionSelection(int moving, int status) {
+		currentGame.receiveMovementSelection(2);
+		int questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition, currentMaze.getMyXPosition);
+		Assert.assertEquals(status, questionSelect);
+	}
+	
+	@Test
+	void testPauseMenu() {
+		Assert.assertEquals(2, currentGame.promptPauseMenu);
+	}
+	
+	@Test
+	void testSaveGame() {
+		
+	}
+	
+	@Test
+	void testLoadGame() {
+		
+	}
+	
+	@Test
+	void testExitGame() {
+		
+	}
+	
+	@Test
+	void testWinCondition() {
+		
+	}
+	
+	@Test
+	void testWinPosible() {
+		
+	}
 	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
-
-
 
 }

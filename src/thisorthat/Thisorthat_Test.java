@@ -2,6 +2,9 @@ package thisorthat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class Thisorthat_Test {
+public static final int UP = 0;
+public static final int RIGHT = 1;
+public static final int DOWN = 2;
+public static final int LEFT = 3;
+
 Maze currentMaze;
 Game currentGame;
 //SETUP-----------------------------------------------------------------------------------SETUP
@@ -88,28 +96,33 @@ Game currentGame;
 		currentGame.promptMovement();
 	}
 	
+	//be prepared for this test to fail once we implement the code that ends the game after winning
 	@Test
 	void testRecieveMovementSelectionUp() {
-		currentGame.receiveMovementSelection(0);
-		Assert.assertEquals([0][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		currentGame.receiveMovementSelection(UP);
+		//Assert.assertEquals(currentMaze.getMyRooms()[0][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertTrue(currentMaze.getMyYPosition() == 0 && currentMaze.getMyXPosition() == 1);
 	}
 	
 	@Test
 	void testRecieveMovementSelectionLeft() {
-		currentGame.receiveMovementSelection(3);
-		Assert.assertEquals([1][0], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		currentGame.receiveMovementSelection(LEFT);
+
+		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 0);
 	}
 	
 	@Test
 	void testRecieveMovementSelectionRight() {
-		currentGame.receiveMovementSelection(1);
-		Assert.assertEquals([1][2], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		currentGame.receiveMovementSelection(RIGHT);
+		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 2);
+
 	}
 	
 	@Test
 	void testRecieveMovementSelectionDownLocked() {
-		currentGame.receiveMovementSelection(2);
-		Assert.assertEquals([1][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		currentGame.receiveMovementSelection(DOWN);
+		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 1);
+
 	}
 	
 	@Test
@@ -117,27 +130,27 @@ Game currentGame;
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
 		currentMaze.obtainKey();
 		currentGame.receiveMovementSelection(2);
-		Assert.assertEquals([2][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertTrue(currentMaze.getMyYPosition() == 2 && currentMaze.getMyXPosition() == 1);
 	}
 
-	@Test
-	void testPromptQuestionSelectionUnlocked1() {
-		promptQuestionSelection(0, 0);
-		promptQuestionSelection(1, 0);
-		promptQuestionSelection(3, 0);
-	}
-	
-	@Test
-	void testPromptQuestionSelectionLocked() {
-		promptQuestionSelection(2, 1);
-	}
-	
-	void promptQuestionSelection(int moving, int status) {
-		currentGame.receiveMovementSelection(moving);
-		int questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition, currentMaze.getMyXPosition);
-		Assert.assertEquals(status, questionSelect);
-	}
-	
+//	@Test
+//	void testPromptQuestionSelectionUnlocked1() {
+//		promptQuestionSelection(0, 0);
+//		promptQuestionSelection(1, 0);
+//		promptQuestionSelection(3, 0);
+//	}
+//	
+//	@Test
+//	void testPromptQuestionSelectionLocked() {
+//		promptQuestionSelection(2, 1);
+//	}
+//	
+//	void promptQuestionSelection(int moving, int status) {
+//		currentGame.receiveMovementSelection(moving);
+//		int questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition(), currentMaze.getMyXPosition());
+//		Assert.assertEquals(status, questionSelect);
+//	}
+//	
 	@Test
 	void testPauseMenu() {
 		Assert.assertEquals(2, currentGame.promptPauseMenu());
@@ -147,14 +160,29 @@ Game currentGame;
 	void testSaveGame() {
 		//create a new save file
 		currentGame.saveGame();
-		Assert.assertEquals("saveFile.txt", currentGame.fileExists);
+		File saveFile = new File("saveFile.txt");
+		Assert.assertTrue(saveFile.exists());
+		
 	}
 	
 	@Test
 	void testLoadGame() {
 		//check that the save file from testSaveGame is available to access
+		Room[][] roomComparison = currentMaze.getMyRooms();
+		boolean keyComparison = currentMaze.getHasKey();
+		int xComparison = currentMaze.getMyXPosition();
+		int yComparison = currentMaze.getMyYPosition();
+		
+		currentGame.saveGame();
 		currentGame.loadGame();
-		currentGame.checkFileExists = true;
+		
+		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
+		assertTrue(currentGame.getMyMaze().getHasKey() == keyComparison);
+		assertTrue(currentGame.getMyMaze().getMyXPosition() == xComparison);
+		assertTrue(currentGame.getMyMaze().getMyYPosition() == yComparison);
+		currentGame.receiveMovementSelection(RIGHT);
+		//confirm different
+		assertFalse(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
 	}
 	
 	@Test
@@ -164,28 +192,29 @@ Game currentGame;
 	}
 	
 	@Test
-	void testWinCondition() {
-		Room goal = currentMaze.getMyRooms()[0][1];
-		Room current = currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
+	void testWinConditionTrue() {
+		currentGame.receiveMovementSelection(UP);
+		Assert.assertTrue(currentGame.checkWinCondition());
+
+	}
+	
+	@Test
+	void testWinConditionFalse() {
 		Assert.assertFalse(currentGame.checkWinCondition());
-		currentGame.receiveMovementSelection(1);
-		Assert.assertFalse(currentGame.checkWinCondition());
-		currentGame.receiveMovementSelection(0);
-		Assert.assertFalse(currentGame.checkWinCondition());
-		currentGame.receiveMovementSelection(3);
-		Assert.assertTrue(currentGame.checkWinCondition());		
 	}
 	
 	@Test
 	void testWinPosible() {
-		Room goal = currentMaze.getMyRooms()[0][1];
-		currentMaze.getMyRooms()[0][1].getIsAcessible();
+		//winnable maze
 		Assert.assertTrue(currentGame.checkWinPossible());
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
-		currentGame.receiveMovementSelection(1);
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()-1][currentMaze.getMyXPosition()].setIsLocked(true);
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()-1].setIsLocked(true);
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()+1][currentMaze.getMyXPosition()].setIsLocked(true);
+		//create unwinnable conditions
+		currentMaze.getMyRooms()[1][2].setIsAcessible(true);
+		currentGame.receiveMovementSelection(RIGHT);
+		currentMaze.getMyRooms()[1][1].setIsLocked(true);
+		currentMaze.getMyRooms()[1][1].setIsAcessible(false);
+		currentMaze.getMyRooms()[0][2].setIsLocked(true);
+		currentMaze.getMyRooms()[2][2].setIsLocked(true);
+		//confirm unwinnable
 		Assert.assertFalse(currentGame.checkWinPossible());
 	}
 	

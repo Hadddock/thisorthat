@@ -33,7 +33,7 @@ public class Game {
 	
 	public void receiveMovementSelection(int move) {
 		if (isInMaze) {
-			move;
+//			move;
 		}
 	}
 	
@@ -59,6 +59,10 @@ public class Game {
 	
 	public void loadGame() {
 		
+	}
+	
+	public Maze getMyMaze() {
+		return this.myMaze;
 	}
 	
 	public boolean checkFileExists() {

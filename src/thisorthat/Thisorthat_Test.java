@@ -77,7 +77,7 @@ Maze currentMaze;
 		Assert.assertFalse(currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
 		
 	}
-	
+
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
 	

@@ -15,6 +15,32 @@ public class Maze extends Observable {
 		this.myXPosition = theXPosition;
 		this.hasKey = theKeyStatus;
 	}
+	
+	public Maze() {
+		Room[][] testRooms = new Room[3][3];
+		// make Gullunge/basic question room
+		Room testRoomGullenge = new Room(new Question(), false, false, false, false);
+		testRooms[0][0] = new Room(testRoomGullenge);
+		testRooms[0][2] = new Room(testRoomGullenge);
+		testRooms[1][2] = new Room(testRoomGullenge);
+		testRooms[2][0] = new Room(testRoomGullenge);
+		testRooms[2][2] = new Room(testRoomGullenge);
+		//make start room
+		testRooms[1][1] = new Room(new Question(), true, false, false, false);
+
+		// make goal room
+		testRooms[0][1] = new Room(new Question(), true, false, true, false);
+		// make key room
+		testRooms[1][0] = new Room(new Question(), false, false, false, true);
+
+		// make locked room
+		testRooms[2][1] = new Room(new Question(), false, true, false, false);
+
+		//TODO replace null with the test display variable
+		this.myRooms = testRooms;
+		this.myYPosition = 1;
+		this.myXPosition = 1;
+	}
 
 	public int getMyYPosition() {
 		return myYPosition;
@@ -43,8 +69,16 @@ public class Maze extends Observable {
 	public void obtainKey() {
 		// if giving player key and current room contains a key
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
-			this.hasKey = true;
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
+			this.hasKey = true;
+		}
+	}
+	
+	public void useKey() {
+		if (this.myRooms[myYPosition][myXPosition].getIsLocked()) {
+			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
+			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
+			this.hasKey = false;
 		}
 	}
 

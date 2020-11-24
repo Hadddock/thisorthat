@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class Thisorthat_Test {
 Maze currentMaze;
+Display currentDisplay;
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -57,6 +58,9 @@ Maze currentMaze;
 		int testXPositon = 1;
 		boolean testKeyStatus = false;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
+		
+		//stuff I've added
+		currentDisplay = new Display();
 	}
 
 	@AfterEach
@@ -84,6 +88,29 @@ Maze currentMaze;
 	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
 
-
+	@Test
+	void testShowMaze() {
+		currentDisplay.showMaze(currentMaze);
+	}
+	
+	@Test
+	void testShowQuestion() {
+		currentDisplay.showQuestion(currentMaze.getMyRooms()[0][0].getMyQuestion());
+	}
+	
+	@Test
+	void testShowPauseMenu() {
+		currentDisplay.showPauseMenu();
+	}
+	
+	@Test
+	void testDisplayWinScreen() {
+		currentDisplay.displayWinScreen();
+	}
+	
+	@Test
+	void testDisplayLoseScreen() {
+		currentDisplay.displayLoseScreen();
+	}
 
 }

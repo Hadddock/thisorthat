@@ -177,21 +177,25 @@ private static final int LEFT = 37;
 		console.close();
 		JSONObject jsonOb = new JSONObject();
 		JSONArray jsonAr = new JSONArray();
+//		JSONObject jsonOb2 = new JSONArray();
 		for (Room[] y: myMaze.getMyRooms()) {
-			jsonAr.add("RoomArray"+1);
 			JSONArray jsonAr2 = new JSONArray();
 			for (Room x: y) {
-				final Map m = new LinkedHashMap<String, String>(5);
-				m.put("isAcessible", myMaze.getHasKey());
-				m.put("isLocked", myMaze.getHasKey());
-				m.put("isGoal", myMaze.getHasKey());
-				m.put("isKeyRoom", myMaze.getHasKey());
-				jsonAr2.add(m);
+				final Map<String,Object> m = new LinkedHashMap<String, Object>(5);
+				m.put("isAcessible", x.getIsAcessible());
+				m.put("isLocked", x.getIsLocked());
+				m.put("isGoal", x.getIsGoal());
+				m.put("isKeyRoom", x.getIsKeyRoom());
+				final Map<String,Object> n = new LinkedHashMap<String,Object>(2);
+				n.put("", myMaze.getHasKey());
+				n.put("", myMaze.getHasKey());
+				jsonAr2.add(n);
+				m.put("Question", n);
+				m.put("Room"+1,jsonAr2);
 				jsonAr.add(jsonAr2);
 			}
-			//jsonAr.add(m);
+			jsonOb.put("RoomArray"+1, jsonAr);
 		}
-		jsonOb.put("Rooms",jsonAr);
 		try {
 			final PrintWriter pw = new PrintWriter(fileName);
 			pw.write(jsonOb.toJSONString());

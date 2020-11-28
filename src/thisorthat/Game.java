@@ -2,17 +2,18 @@ package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+
 import javax.swing.JFrame;
-import org.json.simple.JSONArray;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Game implements KeyListener {
 private static final int UP =  	38;
@@ -175,34 +176,35 @@ private static final int LEFT = 37;
 		System.out.println("Give a file name: ");
 		String fileName = console.nextLine() + ".json";
 		console.close();
-		JSONObject jsonOb = new JSONObject();
-		JSONArray jsonAr = new JSONArray();
-//		JSONObject jsonOb2 = new JSONArray();
-		for (Room[] y: myMaze.getMyRooms()) {
-			JSONArray jsonAr2 = new JSONArray();
-			for (Room x: y) {
-				final Map<String,Object> m = new LinkedHashMap<String, Object>(5);
-				m.put("isAcessible", x.getIsAcessible());
-				m.put("isLocked", x.getIsLocked());
-				m.put("isGoal", x.getIsGoal());
-				m.put("isKeyRoom", x.getIsKeyRoom());
-				final Map<String,Object> n = new LinkedHashMap<String,Object>(2);
-				n.put("", myMaze.getHasKey());
-				n.put("", myMaze.getHasKey());
-				jsonAr2.add(n);
-				m.put("Question", n);
-				m.put("Room"+1,jsonAr2);
-				jsonAr.add(jsonAr2);
+//		JSONArray arr = new JSONArray();
+		JSONObject obj3 = new JSONObject();
+		int roomNum = 1;
+		for (int i = 0; i < myMaze.getMyRooms().length; i++) {
+			JSONObject obj4 = new JSONObject();
+			for (int j = 0; j < myMaze.getMyRooms()[i].length; j++) {
+				JSONObject obj2 = new JSONObject();
+				obj2.put("isAcessible", myMaze.getMyRooms()[i][j].getIsAcessible());
+				obj2.put("isLocked", myMaze.getMyRooms()[i][j].getIsLocked());
+				obj2.put("isGoal", myMaze.getMyRooms()[i][j].getIsGoal());
+				obj2.put("isKeyRoom", myMaze.getMyRooms()[i][j].getIsKeyRoom());
+				//TODO add questions and the related information
+				
+				obj4.put("Room"+roomNum, obj2);
+				roomNum++;
 			}
-			jsonOb.put("RoomArray"+1, jsonAr);
+			obj3.put("RoomArray"+(i+1), obj4);
+			obj3.put("myXPosition", myMaze.getMyXPosition());
+			obj3.put("myYPosition", myMaze.getMyYPosition());
+			obj3.put("hasKey", myMaze.getHasKey());
 		}
-		try {
-			final PrintWriter pw = new PrintWriter(fileName);
-			pw.write(jsonOb.toJSONString());
-			pw.flush();
-			pw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		try { 
+			JSONObject obj = new JSONObject();
+			obj.put("Rooms", obj3);
+			PrintWriter pw = new PrintWriter(fileName);
+			pw.write(obj.toJSONString()); 
+			pw.flush(); 
+			pw.close(); 
+		} catch (IOException e) { 
 			e.printStackTrace();
 		}
 		//write to file in that order (and save it in the src file here)
@@ -211,11 +213,42 @@ private static final int LEFT = 37;
 	public void loadGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("What file would you like to load?: ");
-		String fileName = console.nextLine();
+		String fileName = console.nextLine() + ".json";
 		console.close();
 		try {
-			BufferedReader readFile = new BufferedReader(new FileReader(fileName));
+//			BufferedReader readFile = new BufferedReader(new FileReader(fileName));
+			Object parse = new JSONParser().parse(new FileReader(fileName));
+			JSONObject obj = (JSONObject) parse;
+			Map map = ((Map)obj.get("Rooms"));
+			Room[][] rooms = new Room[map.size()][map.size()];
+			int roomNum = 1;
+			int mapSize = map.size()/2;
+//			System.out.println(mapSize);
+			for (int i = 0; i < mapSize; i++) {
+				System.out.println(i);
+				Map map2 = ((Map)map.get("RoomArray" + (i+1)));
+				for (int j = 0; j < map2.size(); j++) {
+//					System.out.println(roomNum);
+					Map map3 = ((Map)map2.get("Room"+ roomNum));
+					roomNum++;
+				    boolean isAcessible = (Boolean)map3.get("isAcessible");
+					boolean isLocked = (Boolean)map3.get("isLocked");
+					boolean isGoal = (Boolean)map3.get("isGoal");
+					boolean isKeyRoom = (Boolean)map3.get("isKeyRoom");
+					rooms[i][j] = new Room(new Question(), isAcessible, isLocked, isGoal, isKeyRoom);
+				}
+			}
+			myMaze.setMyXPosition(Math.toIntExact((Long)map.get("myXPosition")));
+			myMaze.setMyYPosition(Math.toIntExact((Long)map.get("myYPosition")));
+			myMaze.setHasKey((Boolean)map.get("hasKey"));
+//			readFile.close();
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -243,8 +276,9 @@ private static final int LEFT = 37;
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
 		while(!testGame.isFinished) {
+//			testGame.loadGame();
 			testGame.receiveMovementSelection(testGame.promptMovement()); 
-			testGame.saveGame();
+//			testGame.saveGame();
 		};
 		System.out.println(testGame.myMaze);
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");

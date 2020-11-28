@@ -1,7 +1,6 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -176,7 +175,6 @@ private static final int LEFT = 37;
 		System.out.println("Give a file name: ");
 		String fileName = console.nextLine() + ".json";
 		console.close();
-//		JSONArray arr = new JSONArray();
 		JSONObject obj3 = new JSONObject();
 		int roomNum = 1;
 		for (int i = 0; i < myMaze.getMyRooms().length; i++) {
@@ -187,8 +185,12 @@ private static final int LEFT = 37;
 				obj2.put("isLocked", myMaze.getMyRooms()[i][j].getIsLocked());
 				obj2.put("isGoal", myMaze.getMyRooms()[i][j].getIsGoal());
 				obj2.put("isKeyRoom", myMaze.getMyRooms()[i][j].getIsKeyRoom());
-				//TODO add questions and the related information
-				
+				JSONObject obj5 = new JSONObject();
+				obj5.put("mySubject", myMaze.getMyRooms()[i][j].getMyQuestion().getMySubject());
+				obj5.put("answer1", myMaze.getMyRooms()[i][j].getMyQuestion().getMyAnswers()[0]);
+				obj5.put("answer2", myMaze.getMyRooms()[i][j].getMyQuestion().getMyAnswers()[1]);
+				obj5.put("myCorrectAnswer", myMaze.getMyRooms()[i][j].getMyQuestion().getMyCorrectAnswer());
+				obj2.put("Question", obj5);
 				obj4.put("Room"+roomNum, obj2);
 				roomNum++;
 			}
@@ -197,7 +199,7 @@ private static final int LEFT = 37;
 			obj3.put("myYPosition", myMaze.getMyYPosition());
 			obj3.put("hasKey", myMaze.getHasKey());
 		}
-		try { 
+		try {
 			JSONObject obj = new JSONObject();
 			obj.put("Rooms", obj3);
 			PrintWriter pw = new PrintWriter(fileName);
@@ -207,7 +209,6 @@ private static final int LEFT = 37;
 		} catch (IOException e) { 
 			e.printStackTrace();
 		}
-		//write to file in that order (and save it in the src file here)
 	}
 
 	public void loadGame() {
@@ -216,7 +217,6 @@ private static final int LEFT = 37;
 		String fileName = console.nextLine() + ".json";
 		console.close();
 		try {
-//			BufferedReader readFile = new BufferedReader(new FileReader(fileName));
 			Object parse = new JSONParser().parse(new FileReader(fileName));
 			JSONObject obj = (JSONObject) parse;
 			Map map = ((Map)obj.get("Rooms"));
@@ -235,13 +235,18 @@ private static final int LEFT = 37;
 					boolean isLocked = (Boolean)map3.get("isLocked");
 					boolean isGoal = (Boolean)map3.get("isGoal");
 					boolean isKeyRoom = (Boolean)map3.get("isKeyRoom");
-					rooms[i][j] = new Room(new Question(), isAcessible, isLocked, isGoal, isKeyRoom);
+					Map map4 = (Map)map3.get("Question");
+					String subject = (String)map4.get("mySubject");
+					String[] answers = new String[2];
+					answers[0] = (String)map4.get("answer1");
+					answers[1] = (String)map4.get("answer2");
+					int correctAnswer = Math.toIntExact((Long)map4.get("myCorrectAnswer"));
+					rooms[i][j] = new Room(new Question(subject, answers,correctAnswer), isAcessible, isLocked, isGoal, isKeyRoom);
 				}
 			}
 			myMaze.setMyXPosition(Math.toIntExact((Long)map.get("myXPosition")));
 			myMaze.setMyYPosition(Math.toIntExact((Long)map.get("myYPosition")));
 			myMaze.setHasKey((Boolean)map.get("hasKey"));
-//			readFile.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -272,11 +277,10 @@ private static final int LEFT = 37;
 		}
 	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
+		testGame.loadGame();
 		while(!testGame.isFinished) {
-//			testGame.loadGame();
 			testGame.receiveMovementSelection(testGame.promptMovement()); 
 //			testGame.saveGame();
 		};
@@ -287,40 +291,3 @@ private static final int LEFT = 37;
 	}
 
 }
-
-/*{
-"RoomArray1":[
-	"Room1":{
-		"isAcessible": the boolean,
-		"isLocked": the boolean,
-		"isGoal": the boolean,
-		"isKeyRoom": the boolean,
-		"Question": {
-			"mySubject": the String,
-			"myAnswers": [
-				"answer1" theString,
-				"answer2" theString,
-			]
-			"myCorrectAnswer": the int,
-		}
-	}
-	"Room2":{
-		"isAcessible": the boolean,
-		"isLocked": the boolean,
-		"isGoal": the boolean,
-		"isKeyRoom": the boolean,
-		"Question": {
-			"mySubject": the String,
-			"myAnswers": [
-				"answer1" theString,
-				"answer2" theString,
-			]
-			"myCorrectAnswer": the int,
-		}
-	}
-]
-],
-"myXPosition":the int,
-"myYPosition":the int,
-"hasKey":the boolean,
-}*/

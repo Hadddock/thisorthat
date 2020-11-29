@@ -1,6 +1,10 @@
 package thisorthat;
-
 import java.util.Observable;
+import java.util.Set;
+import java.util.Stack;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class Maze extends Observable {
@@ -61,6 +65,124 @@ public class Maze extends Observable {
 	public boolean getHasKey() {
 		return hasKey;
 	}
+	
+	public boolean checkWinPossible() {
+		int x = myXPosition;
+		int y = myYPosition;
+		Room current = this.myRooms[y][x];
+		//check most common unsolvable condition, surrounded by locked or null rooms without a key
+		if(!this.hasKey 
+				&& (this.myRooms[y+1][x] == null || this.myRooms[y+1][x].getIsLocked())
+				&& (this.myRooms[y-1][x] == null || this.myRooms[y-1][x].getIsLocked())
+				&& (this.myRooms[y][x+1] == null || this.myRooms[y][x+1].getIsLocked())
+				&& (this.myRooms[y][x-1] == null || this.myRooms[y][x-1].getIsLocked())) {
+			return false;
+		}
+		
+//		class mapRoom implements Comparator<mapRoom>{
+//			int myXCoordinate;
+//			int myYCoordinate;
+//			int myScore;
+//			public mapRoom(int theYCoordinate, int theXCoordinate, int theScore) {
+//				this.myYCoordinate = theYCoordinate;
+//				this.myXCoordinate = theXCoordinate;
+//				this.myScore = theScore;
+//			}
+//			public int compare(mapRoom theMapRoomOne, mapRoom theMapRoomTwo) {
+//				return theMapRoomOne.myScore - theMapRoomTwo.myScore;
+//			}
+//		}
+////		
+//		HashSet<mapRoom> visited = new HashSet<mapRoom>();
+//		PriorityQueue<mapRoom> priorityQueue = new PriorityQueue<>();
+//		
+//		for(int i = 0; i < this.myRooms.length; i++) {
+//			for(int j = 0; j < this.myRooms[0].length; j++) {
+//				priorityQueue.add(new mapRoom(i,j,(Math.abs(myGoalXPosition - j) + Math.abs(myGoalYPosition - i))));
+//			}
+//		}
+//		
+//		while(!priorityQueue.isEmpty()) {
+//			current = priorityQueue.;
+//		}
+		boolean potentialKey = this.hasKey;
+		Set<Room> set = new HashSet<Room>();
+		Set<Room> lockedNeighbors = new HashSet<Room>();
+		Stack<Room> stack = new Stack<Room>();
+		stack.add(current);
+		
+		
+		while(!stack.isEmpty()) {
+			Room element = stack.pop();
+			if (element.getIsKeyRoom()){
+				potentialKey = true;
+			}
+			if(!set.contains(element)) {
+				set.add(element);
+				
+			}
+			if(element.getIsGoal()) {
+				return true;
+			}
+			
+			List<Room> neighbors = getNeighbors(y,x);
+			for(int i = 0; i < neighbors.size(); i++) {
+				Room n = neighbors.get(i);
+				if(!n.getIsLocked()) {
+					set.add(n);
+				}
+				else {
+					lockedNeighbors.add(n);
+				}
+			}
+		}
+		//if a key is in posession or is acessible,
+		if(potentialKey) {
+			for(Room lockedRoom: lockedNeighbors) {
+				stack.add(lockedRoom);
+			}
+		}
+		
+		while(!stack.isEmpty()) {
+			Room element = stack.pop();
+			if(!set.contains(element)) {
+				set.add(element);
+			}
+			if(element.getIsGoal()) {
+				return true;
+			}
+			List<Room> neighbors = getNeighbors(y,x);
+			for(int i = 0; i < neighbors.size(); i++) {
+				Room n = neighbors.get(i);
+				if(!n.getIsLocked()) {
+					set.add(n);
+				}
+			}
+		}
+		return false;
+	}
+	
+	public List<Room> getNeighbors(int y, int x) {
+		List<Room> returnValue = new LinkedList<Room>();
+		if(this.myRooms[y-1][x] != null) {
+			returnValue.add(this.myRooms[y-1][x]);
+		}
+		if(this.myRooms[y][x+1] != null) {
+			returnValue.add(this.myRooms[y][x+1]);
+		}
+		
+		if(this.myRooms[y+1][x] != null) {
+			returnValue.add(this.myRooms[y+1][x]);
+		}
+		
+		if(this.myRooms[y][x-1] != null) {
+			returnValue.add(this.myRooms[y][x-1]);
+		}
+		return returnValue;
+	}
+
+	
+
 
 	/*
 	 * If player has obtained a key from a room, set hasKey to true and remove the

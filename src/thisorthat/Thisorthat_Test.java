@@ -19,6 +19,7 @@ Game currentGame;
 
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
+		
 	}
 
 	/*
@@ -64,6 +65,7 @@ Game currentGame;
 
 	@AfterEach
 	void tearDown() throws Exception {
+		currentGame.closeFrame();
 	}
 
 //MODEL TESTS-----------------------------------------------------------------------------------MODEL TESTS	
@@ -91,33 +93,47 @@ Game currentGame;
 	@Test
 	void testRecieveMovementSelectionUp() {
 		currentGame.receiveMovementSelection(0);
-		Assert.assertEquals([0][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(0, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionLeft() {
 		currentGame.receiveMovementSelection(3);
-		Assert.assertEquals([1][0], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertEquals(0, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionRight() {
 		currentGame.receiveMovementSelection(1);
-		Assert.assertEquals([1][2], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertEquals(2, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionDownLocked() {
 		currentGame.receiveMovementSelection(2);
-		Assert.assertEquals([1][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionDownUnlocked() {
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
-		currentMaze.obtainKey();
+		currentMaze.setHasKey(true);
 		currentGame.receiveMovementSelection(2);
-		Assert.assertEquals([2][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(2, currentMaze.getMyYPosition());
+	}
+	
+	@Test
+	void testRecieveMovementSelectionLeftRight() {
+		currentGame.receiveMovementSelection(3);
+		Assert.assertEquals(0, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
+		currentGame.receiveMovementSelection(1);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 
 	@Test
@@ -129,13 +145,15 @@ Game currentGame;
 	
 	@Test
 	void testPromptQuestionSelectionLocked() {
-		promptQuestionSelection(2, 1);
+		currentGame.receiveMovementSelection(2);
+		boolean questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition(), currentMaze.getMyXPosition());
+		Assert.assertFalse(questionSelect);
 	}
 	
 	void promptQuestionSelection(int moving, int status) {
 		currentGame.receiveMovementSelection(moving);
-		int questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition, currentMaze.getMyXPosition);
-		Assert.assertEquals(status, questionSelect);
+		boolean questionSelect = currentGame.promptQuestion(currentMaze.getMyYPosition(), currentMaze.getMyXPosition());
+		Assert.assertTrue(questionSelect);
 	}
 	
 	@Test
@@ -154,13 +172,12 @@ Game currentGame;
 	void testLoadGame() {
 		//check that the save file from testSaveGame is available to access
 		currentGame.loadGame();
-		currentGame.checkFileExists = true;
+		Assert.assertTrue(currentGame.checkFileExists());
 	}
 	
 	@Test
 	void testExitGame() {
-		currentGame.exitGame();
-		
+		currentGame.exitGame();	
 	}
 	
 	@Test
@@ -181,7 +198,7 @@ Game currentGame;
 		Room goal = currentMaze.getMyRooms()[0][1];
 		currentMaze.getMyRooms()[0][1].getIsAcessible();
 		Assert.assertTrue(currentGame.checkWinPossible());
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
+		Room position = currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
 		currentGame.receiveMovementSelection(1);
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()-1][currentMaze.getMyXPosition()].setIsLocked(true);
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()-1].setIsLocked(true);

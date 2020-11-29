@@ -66,54 +66,37 @@ public class Maze extends Observable {
 		return hasKey;
 	}
 	
+	public boolean checkInBounds(int y, int x) {
+		if (x >= 0 && x <= this.myRooms[0].length - 1 && y >= 0 && y <= this.myRooms.length - 1) {
+			return true;
+		}
+		return false;
+	}
+	//XXX repeated code for second while loop, needs to go through process again with locked rooms
+	//added in order to account for being able to reach the goal with the key
 	public boolean checkWinPossible() {
 		int x = myXPosition;
 		int y = myYPosition;
 		Room current = this.myRooms[y][x];
 		//check most common unsolvable condition, surrounded by locked or null rooms without a key
 		if(!this.hasKey 
-				&& (this.myRooms[y+1][x] == null || this.myRooms[y+1][x].getIsLocked())
-				&& (this.myRooms[y-1][x] == null || this.myRooms[y-1][x].getIsLocked())
-				&& (this.myRooms[y][x+1] == null || this.myRooms[y][x+1].getIsLocked())
-				&& (this.myRooms[y][x-1] == null || this.myRooms[y][x-1].getIsLocked())) {
+				&& (!checkInBounds(y+1,x) || this.myRooms[y+1][x].getIsLocked())
+				&& (!checkInBounds(y-1,x) || this.myRooms[y-1][x].getIsLocked())
+				&& (!checkInBounds(y,x+1) || this.myRooms[y][x+1].getIsLocked())
+				&& (!checkInBounds(y,x-1) || this.myRooms[y][x-1].getIsLocked())) {
 			return false;
 		}
-		
-//		class mapRoom implements Comparator<mapRoom>{
-//			int myXCoordinate;
-//			int myYCoordinate;
-//			int myScore;
-//			public mapRoom(int theYCoordinate, int theXCoordinate, int theScore) {
-//				this.myYCoordinate = theYCoordinate;
-//				this.myXCoordinate = theXCoordinate;
-//				this.myScore = theScore;
-//			}
-//			public int compare(mapRoom theMapRoomOne, mapRoom theMapRoomTwo) {
-//				return theMapRoomOne.myScore - theMapRoomTwo.myScore;
-//			}
-//		}
-////		
-//		HashSet<mapRoom> visited = new HashSet<mapRoom>();
-//		PriorityQueue<mapRoom> priorityQueue = new PriorityQueue<>();
-//		
-//		for(int i = 0; i < this.myRooms.length; i++) {
-//			for(int j = 0; j < this.myRooms[0].length; j++) {
-//				priorityQueue.add(new mapRoom(i,j,(Math.abs(myGoalXPosition - j) + Math.abs(myGoalYPosition - i))));
-//			}
-//		}
-//		
-//		while(!priorityQueue.isEmpty()) {
-//			current = priorityQueue.;
-//		}
+		//begin depth first search on key
 		boolean potentialKey = this.hasKey;
 		Set<Room> set = new HashSet<Room>();
 		Set<Room> lockedNeighbors = new HashSet<Room>();
 		Stack<Room> stack = new Stack<Room>();
 		stack.add(current);
 		
-		
 		while(!stack.isEmpty()) {
 			Room element = stack.pop();
+			x = element.getMyXCoordinate();
+			y = element.getMyYCoordinate();
 			if (element.getIsKeyRoom()){
 				potentialKey = true;
 			}
@@ -124,15 +107,17 @@ public class Maze extends Observable {
 			if(element.getIsGoal()) {
 				return true;
 			}
-			
 			List<Room> neighbors = getNeighbors(y,x);
 			for(int i = 0; i < neighbors.size(); i++) {
 				Room n = neighbors.get(i);
 				if(!n.getIsLocked()) {
-					set.add(n);
+					if(!set.contains(n) && !stack.contains(n)) {
+						stack.add(n);
+					}
 				}
-				else {
-					lockedNeighbors.add(n);
+				
+				else if (!lockedNeighbors.contains(n)) {
+						lockedNeighbors.add(n);
 				}
 			}
 		}
@@ -142,9 +127,11 @@ public class Maze extends Observable {
 				stack.add(lockedRoom);
 			}
 		}
-		
+		//second time around assuming key has been used somewhere
 		while(!stack.isEmpty()) {
 			Room element = stack.pop();
+			x = element.getMyXCoordinate();
+			y = element.getMyYCoordinate();
 			if(!set.contains(element)) {
 				set.add(element);
 			}
@@ -154,35 +141,43 @@ public class Maze extends Observable {
 			List<Room> neighbors = getNeighbors(y,x);
 			for(int i = 0; i < neighbors.size(); i++) {
 				Room n = neighbors.get(i);
-				if(!n.getIsLocked()) {
-					set.add(n);
+				if(!n.getIsLocked() && !set.contains(n) && !stack.contains(n)) {
+						set.add(n);
 				}
 			}
 		}
 		return false;
 	}
 	
+	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
 	public List<Room> getNeighbors(int y, int x) {
 		List<Room> returnValue = new LinkedList<Room>();
-		if(this.myRooms[y-1][x] != null) {
+		if(checkInBounds(y-1,x)) {
+			
+			this.myRooms[y-1][x].setMyYCoordinate(y-1);
+			this.myRooms[y-1][x].setMyXCoordinate(x);
 			returnValue.add(this.myRooms[y-1][x]);
 		}
-		if(this.myRooms[y][x+1] != null) {
+		if(checkInBounds(y,x+1)) {
+			
+			this.myRooms[y][x+1].setMyYCoordinate(y);
+			this.myRooms[y][x+1].setMyXCoordinate(x+1);
 			returnValue.add(this.myRooms[y][x+1]);
 		}
 		
-		if(this.myRooms[y+1][x] != null) {
+		if(checkInBounds(y+1,x)) {
+			this.myRooms[y+1][x].setMyYCoordinate(y+1);
+			this.myRooms[y+1][x].setMyXCoordinate(x);
 			returnValue.add(this.myRooms[y+1][x]);
 		}
 		
-		if(this.myRooms[y][x-1] != null) {
+		if(checkInBounds(y,x-1)) {
+			this.myRooms[y][x-1].setMyYCoordinate(y);
+			this.myRooms[y][x-1].setMyXCoordinate(x-1);
 			returnValue.add(this.myRooms[y][x-1]);
 		}
 		return returnValue;
 	}
-
-	
-
 
 	/*
 	 * If player has obtained a key from a room, set hasKey to true and remove the

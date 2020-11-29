@@ -86,11 +86,16 @@ Game currentGame;
 		//check that the player now has the key, and the room they got the key from no longer has a key
 		Assert.assertTrue(currentMaze.getHasKey());
 		Assert.assertFalse(currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
-		
 	}
 
+	@Test
+	void testCheckWinPossible() {
+		assertTrue(currentMaze.checkWinPossible());
+	}
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
+	
+	
 	@Test
 	void testPromptMovement() {
 		currentGame.promptMovement();
@@ -107,7 +112,6 @@ Game currentGame;
 	@Test
 	void testRecieveMovementSelectionLeft() {
 		currentGame.receiveMovementSelection(LEFT);
-
 		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 0);
 	}
 	
@@ -162,8 +166,9 @@ Game currentGame;
 		currentGame.saveGame();
 		File saveFile = new File("saveFile.txt");
 		Assert.assertTrue(saveFile.exists());
-		
 	}
+	
+	
 	
 	@Test
 	void testLoadGame() {
@@ -188,7 +193,6 @@ Game currentGame;
 	@Test
 	void testExitGame() {
 		currentGame.exitGame();
-		
 	}
 	
 	@Test

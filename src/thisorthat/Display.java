@@ -1,13 +1,20 @@
 package thisorthat;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,9 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
-public class Display implements KeyListener {
+public class Display {
 	private JWindow myWindow;
-	private JFrame myMazeFrame;
+	public JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
 
@@ -29,26 +36,15 @@ public class Display implements KeyListener {
 		myWindow = new JWindow(myMazeFrame);
 	}
 
-	// -----------------------------TEMPORARY STUFF-----------------------------
-	public void keyPressed(KeyEvent e) {
-		int keyPressed = e.getKeyCode();
-	}
-
-	public void keyReleased(KeyEvent e) {
-
-	}
-
-	public void keyTyped(KeyEvent e) {
-	}
-
-	// ------------------------------ACTUAL STUFF-------------------------------
-
-	public void showMaze(final Maze theMaze) {
-		myWindow.addKeyListener(this);
+	public void showMaze(final Maze theMaze) throws IOException {
 
 		// Create a pause button
-		JButton pause = new JButton("Pause");
+		JButton pause = new JButton();
+		pause.setPreferredSize(new Dimension(107, 43));
+		BufferedImage img = ImageIO.read(new File("./images/pauseButton.png"));
+	    pause.setIcon(new ImageIcon(img));
 		JPanel menu = new JPanel();
+		menu.setBackground(Color.BLACK);
 		// action listener for pause
 		pause.addActionListener(new ActionListener() {
 			@Override
@@ -58,36 +54,94 @@ public class Display implements KeyListener {
 		});
 		menu.add(pause);
 		
-		// Create maze buttons
+		// Create maze w/ images
 		JPanel mazePanel = new JPanel();
 		Room[][] rooms = theMaze.getMyRooms();
-		JButton[][] mazeButtons = new JButton[rooms.length][rooms[0].length];
+		JLabel[][] picLabels = new JLabel[rooms.length][rooms[0].length];
+		String name;
+		
+		Dimension prefSize = new Dimension(100,100);
+		BufferedImage image;
 		
 		for(int i = 0; i < rooms.length; i++) {
 			for(int j = 0; j < rooms[i].length; j++) {
 				// determine if question room, locked, key room, or goal.
 				Room currentRoom = rooms[i][j];
 				if(currentRoom.getIsGoal()) {
-					// is goal, label it goal
-					mazeButtons[i][j] = new JButton("GOAL");
+					// is the goal, goal image
+					image = ImageIO.read(new File("./images/goal.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "goal";
 				} else if(currentRoom.getIsKeyRoom()) {
 					// key room, label it key
-					mazeButtons[i][j] = new JButton("KEY");
+					image = ImageIO.read(new File("./images/key.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "key";
 				} else if(currentRoom.getIsLocked()) { 
 					// room is locked, label it locked
-					mazeButtons[i][j] = new JButton("LOCKED");
+					image = ImageIO.read(new File("./images/locked.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "locked";
 				} else {
 					// room is accessible, label it with subject
-					mazeButtons[i][j] = new JButton(currentRoom.getMyQuestion().getMySubject());
-				}
-				// add to maze button panel
-				mazePanel.add(mazeButtons[i][j]);
-				// set action for button pressed
-				// *** LISTENER NEEDS SOME WORK TO INCORPORATE DIFFERENT STYLES OF ROOMS ***
-				addMazeListener(mazeButtons[i][j], rooms, i, j);
+					image = ImageIO.read(new File("./images/IKEA.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "IKEA";
+				}				
+				// set mouse listeners and preferred size
+				picLabels[i][j].setPreferredSize(prefSize);
+				setImageMouseListener(picLabels[i][j], name, rooms[i][j].getMyQuestion());
 			}
 		}
-		mazePanel.setLayout(new GridLayout(rooms.length, rooms[0].length));
+		
+		
+		
+		
+		// Setting up the GridBagLayOut
+		mazePanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		// Images for parts of maze
+		BufferedImage vertLine = ImageIO.read(new File("./images/vertLine.png"));
+		BufferedImage blank = ImageIO.read(new File("./images/blank.png"));
+		BufferedImage horLine = ImageIO.read(new File("./images/horizontalLine.png"));
+		int acc;
+		int rowLength = picLabels[0].length + 2;
+		for(int i = 0; i < picLabels.length + 2; i++) {
+			acc = 0;
+			for(int j = 0; j < rowLength; j++) {
+				if(i % 2 == 0) { //Image row
+					if(j % 2 == 0) {
+						gbc.gridx = j;
+						gbc.gridy = i;
+						mazePanel.add(picLabels[i/2][j-acc], gbc);
+						acc++;						
+					} else if(j != rowLength) {
+						JLabel horLineLabel = new JLabel(new ImageIcon(horLine));
+						horLineLabel.setPreferredSize(new Dimension(200,100));
+						gbc.gridx = j;
+						gbc.gridy = i;
+						mazePanel.add(horLineLabel, gbc);
+					}
+				} else { //blank row
+					if(j % 2 == 0) {
+						JLabel vertLineLabel = new JLabel(new ImageIcon(vertLine));
+						vertLineLabel.setPreferredSize(prefSize);
+						gbc.gridx = j;
+						gbc.gridy = i;
+						mazePanel.add(vertLineLabel, gbc);
+					} else if(j != rowLength) {
+						JLabel blankLabel = new JLabel(new ImageIcon(blank));
+						blankLabel.setPreferredSize(prefSize);
+						gbc.gridx = j;
+						gbc.gridy = i;
+						mazePanel.add(blankLabel, gbc);
+				    }
+					
+				}
+			}
+		}
+		
+		mazePanel.setBackground(Color.BLACK);
 		myMazeFrame.add(mazePanel, BorderLayout.CENTER);
 		
 		
@@ -100,18 +154,24 @@ public class Display implements KeyListener {
 		myMazeFrame.setLocationRelativeTo(null);
 		myMazeFrame.setVisible(true);
 		myWindow.setVisible(true);
-
+		myMazeFrame.toFront();
+		myMazeFrame.requestFocus();
+		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 	}
 	
-	private void addMazeListener(JButton theButton, Room[][] theRooms, int i, int j) {
-		theButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent theEvent) {
-				showQuestion(theRooms[i][j].getMyQuestion());
-			}
-		});
+	private void setImageMouseListener(JLabel theImage, final String theName, final Question theQuestion) {
+		theImage.addMouseListener((new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        if(theName.equals("goal") || theName.equals("IKEA") || theName.equals("key")) {
+		        	showQuestion(theQuestion);
+		        } else if(theName.equals("locked")) {
+		        	JOptionPane.showMessageDialog(null, "Door is locked!");
+		        }
+		    }
+		}));
 	}
-
+	
 	public void showQuestion(final Question theQuestion) {
 		JLabel question = new JLabel(theQuestion.getMySubject(), SwingConstants.CENTER);
 		// answerOne button and listener
@@ -155,10 +215,29 @@ public class Display implements KeyListener {
 		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
 	}
 
-	public void showPauseMenu() {
+	public void showPauseMenu(){
 		JLabel paused = new JLabel("The game is paused.", SwingConstants.CENTER);
 		// create resume button and its action listener
-		JButton resume = new JButton("Resume");
+		JButton resume = new JButton();
+		Dimension prefButtonSize = new Dimension(107,25);
+		resume.setPreferredSize(prefButtonSize);
+		JButton save = new JButton("Save");
+		save.setPreferredSize(prefButtonSize);
+		JButton load = new JButton("Load");
+		load.setPreferredSize(prefButtonSize);
+		
+		
+		try {
+			BufferedImage img = ImageIO.read(new File("./images/resume.png"));
+			resume.setIcon(new ImageIcon(img));
+			img = ImageIO.read(new File("./images/save.png"));
+			save.setIcon(new ImageIcon(img));
+			img = ImageIO.read(new File("./images/load.png"));
+			load.setIcon(new ImageIcon(img));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		resume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
@@ -167,17 +246,18 @@ public class Display implements KeyListener {
 		});
 		
 		// create save button and its action listener
-		JButton save = new JButton("Save");
+		
 		save.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
+				
 				JOptionPane.showMessageDialog(null, "Game saved!");
 			}
 		});
 		
 		// create load button and its action listener
-		JButton load = new JButton("Load");
+		
 		load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
@@ -193,7 +273,7 @@ public class Display implements KeyListener {
 		menu.add(load);
 		myPauseFrame.add(menu, BorderLayout.SOUTH);
 		myPauseFrame.add(paused, BorderLayout.CENTER);
-		myPauseFrame.setPreferredSize(new Dimension(300, 100));
+		myPauseFrame.setPreferredSize(new Dimension(400, 100));
 		myPauseFrame.pack();
 		myPauseFrame.setLocationRelativeTo(null);
 		myPauseFrame.setVisible(true);

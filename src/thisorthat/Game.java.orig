@@ -1,8 +1,11 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+<<<<<<< HEAD
 import java.util.Set;
 import java.util.TreeSet;
+
+=======
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -10,11 +13,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 import javax.swing.JFrame;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 
 public class Game implements KeyListener {
 private static final int UP =  	38;
@@ -24,27 +27,44 @@ private static final int LEFT = 37;
 
 	public Maze myMaze;
 	public Display myDisplay;
+
 	boolean isInMaze;
 	boolean isInQuestionMenu;
 	boolean isInPauseMenu;
 	boolean isFinished;
 	boolean fileExists;
 	int keyPressed;
+<<<<<<< HEAD
+	
+=======
+	String myFileName;
 
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 	JFrame frame = new JFrame();
 	
-
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Game testGame = new Game(new Maze(), new Display());
+		//keep going until goal is reached
+		while(!testGame.isFinished) {
+			testGame.receiveMovementSelection(testGame.promptMovement()); 
+		};
+		System.out.println(testGame.myMaze);
+		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
+		testGame.frame.dispose();
+		testGame = null;
+	}
 	
-
+<<<<<<< HEAD
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
-	
-
-
-
+	Game(Maze theMaze, Display theDisplay) {
+=======
+	public void keyTyped(KeyEvent e) {}
 	
 	public Game(Maze theMaze, Display theDisplay) {
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
 		frame.addKeyListener(this);
@@ -159,11 +179,20 @@ private static final int LEFT = 37;
 		isInPauseMenu = true;
 	}
 
-
+<<<<<<< HEAD
+	
+		
+		//replace with variable in Maze tracking goal location
+		
+		
+		
+		
+	
+=======
 	public boolean checkWinCondition() {
 		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
-
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
@@ -281,7 +310,7 @@ private static final int LEFT = 37;
 	public void closeFrame() {
 		this.frame.dispose();
 	}
-
+<<<<<<< HEAD
 
 	private int promptPauseMenu() {
 		return 0;
@@ -291,9 +320,12 @@ private static final int LEFT = 37;
 
 	public void keyTyped(KeyEvent e) {}
 
-
-
-
+}
+=======
+	
+	public Maze getMyMaze() {
+		return this.myMaze;
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -309,4 +341,4 @@ private static final int LEFT = 37;
 	}
 
 }
-
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943

@@ -31,9 +31,6 @@ private static final int LEFT = 37;
 	int keyPressed;
 
 	JFrame frame = new JFrame();
-	
-
-	
 
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
@@ -43,7 +40,6 @@ private static final int LEFT = 37;
 
 	public void keyTyped(KeyEvent e) {}
 
-	
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
@@ -124,7 +120,6 @@ private static final int LEFT = 37;
 		}
 	}
 	
-	
 
 	private void handleMovement(int dy, int dx) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() +dy][this.myMaze.getMyXPosition() + dx];
@@ -159,11 +154,9 @@ private static final int LEFT = 37;
 		isInPauseMenu = true;
 	}
 
-
 	public boolean checkWinCondition() {
 		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
-
 
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);

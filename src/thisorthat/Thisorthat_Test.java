@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
@@ -22,6 +23,7 @@ public static final int LEFT = 3;
 Maze currentMaze;
 Game currentGame;
 Scanner scan = new Scanner(System.in);
+Display currentDisplay;
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -69,8 +71,13 @@ Scanner scan = new Scanner(System.in);
 		int testXPositon = 1;
 		boolean testKeyStatus = false;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
+
 		//TODO replace null with the test display variable
 		currentGame = new Game(currentMaze, null);
+
+		
+		//stuff I've added
+		currentDisplay = new Display();
 	}
 
 	@AfterEach
@@ -196,7 +203,6 @@ Scanner scan = new Scanner(System.in);
 		assertTrue(currentGame.getMyMaze().getHasKey() == keyComparison);
 		assertTrue(currentGame.getMyMaze().getMyXPosition() == xComparison);
 		assertTrue(currentGame.getMyMaze().getMyYPosition() == yComparison);
-
 		currentGame.receiveMovementSelection(1);
 		//confirm different
 		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
@@ -239,5 +245,31 @@ Scanner scan = new Scanner(System.in);
 	}
 	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
+
+	@Test
+	void testShowMaze() throws IOException {
+		currentDisplay.showMaze(currentMaze);
+	}
+	
+	@Test
+	void testShowQuestion() {
+		currentDisplay.showQuestion(currentMaze.getMyRooms()[0][0].getMyQuestion());
+	}
+	
+	@Test
+	void testShowPauseMenu() {
+		currentDisplay.showPauseMenu();
+	}
+	
+	@Test
+	void testDisplayWinScreen() {
+		currentDisplay.displayWinScreen();
+	}
+	
+	@Test
+	void testDisplayLoseScreen() {
+		currentDisplay.displayLoseScreen();
+	}
+
 
 }

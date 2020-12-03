@@ -1,6 +1,9 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.swing.JFrame;
 
 public class Game implements KeyListener {
@@ -18,29 +21,35 @@ private static final int LEFT = 37;
 	boolean isFinished;
 	boolean fileExists;
 	int keyPressed;
+	
 	JFrame frame = new JFrame();
-
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Game testGame = new Game(new Maze(), new Display());
+		//keep going until goal is reached
+		while(!testGame.isFinished) {
+			testGame.receiveMovementSelection(testGame.promptMovement()); 
+		};
+		System.out.println(testGame.myMaze);
+		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
+		testGame.frame.dispose();
+		testGame = null;
+	}
+	
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
-	
-	public void keyReleased(KeyEvent e) {
-		
-	}
-	public void keyTyped(KeyEvent e) {}
-	
-
-	public Game(Maze theMaze, Display theDisplay) {
+	Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
 		frame.addKeyListener(this);
 		frame.setVisible(true);
 		frame.toFront();
-		frame.requestFocus();
 		frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
 	}
 
-	public int promptMovement() {
+	private int promptMovement() {
 		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
 		this.keyPressed = -1;
 		int selectedDirection = -1;
@@ -65,7 +74,7 @@ private static final int LEFT = 37;
 		return selectedDirection;	
 	}
 
-	public boolean promptQuestion(int theRoomY, int theRoomX) {
+	private boolean promptQuestion(int theRoomY, int theRoomX) {
 		Question currentQuestion =(myMaze.getMyRooms()[theRoomY][theRoomX].getMyQuestion());
 		System.out.println(currentQuestion.getMySubject());
 		//currently only supports two answer questions
@@ -86,11 +95,7 @@ private static final int LEFT = 37;
 		return (choice == currentQuestion.getMyCorrectAnswer());	
 	}
 
-	public int promptPauseMenu() {
-		return 0;
-	}
-
-	public void receiveMovementSelection(int selectedDirection)  {
+	private void receiveMovementSelection(int selectedDirection)  {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
@@ -114,16 +119,15 @@ private static final int LEFT = 37;
 			handleMovement(dy,dx);
 		}
 	}
+	
+	
 
 	private void handleMovement(int dy, int dx) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() +dy][this.myMaze.getMyXPosition() + dx];
 		boolean moveRooms = false;
-		// check out of bounds
 
-		// if moving to cleared room
 		if (attemptedRoom.getIsAcessible()) {
 			moveRooms = true;
-			// if at goal
 			if (attemptedRoom.getIsGoal())
 				this.isFinished = true;
 		}
@@ -147,17 +151,18 @@ private static final int LEFT = 37;
 		}
 	}
 
-	public void receivePauseSelection(int pause) {
+	private void receivePauseSelection(int pause) {
 		isInPauseMenu = true;
 	}
 
-	public boolean checkWinCondition() {
-		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
-	}
-
-	public boolean checkWinPossible() {
-		return false;
-	}
+	
+		
+		//replace with variable in Maze tracking goal location
+		
+		
+		
+		
+	
 
 	public void saveGame() {
 		fileExists = true;
@@ -167,7 +172,7 @@ private static final int LEFT = 37;
 
 	}
 
-	public Maze getMyMaze() {
+	private Maze getMyMaze() {
 		return this.myMaze;
 	}
 
@@ -178,17 +183,13 @@ private static final int LEFT = 37;
 	public void exitGame() {
 
 	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Game testGame = new Game(new Maze(), new Display());
-		//keep going until goal is reached
-		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.promptMovement()); 
-		};
-		System.out.println(testGame.myMaze);
-		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
-		testGame.frame.dispose();
-		testGame = null;
+
+	private int promptPauseMenu() {
+		return 0;
 	}
+
+	public void keyReleased(KeyEvent e) {}
+
+	public void keyTyped(KeyEvent e) {}
 
 }

@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -26,23 +28,57 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("deprecation")
-public class Display implements Observer {
+public class Display implements Observer, KeyListener {
+	private static final int UP =  	38;
+	private static final int RIGHT = 39;
+	private static final int DOWN = 40;
+	private static final int LEFT = 37;
+	private static final int ESCAPE = 27;
 	private JWindow myWindow;
 	public JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
 	private boolean correct;
 	private boolean unanswered = true;
-
+	int keyPressed;
+	
 	public Display() {
 		myMazeFrame = new JFrame("Maze");
+		myMazeFrame.addKeyListener(this);
+		myMazeFrame.setVisible(true);
+		myMazeFrame.toFront();
+		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
 		
 	}
 	
+	public void keyPressed(KeyEvent e) {
+		keyPressed = e.getKeyCode();
+	}
+	public void keyReleased(KeyEvent e) {}
+
+	public void keyTyped(KeyEvent e) {}
 	
+	int acceptMazeInput() {
+		System.out.println("\nChoose which direction to go: \n");
+		myMazeFrame.toFront();
+		myMazeFrame.requestFocus();
+		
+		this.keyPressed = -1;
+		int selectedDirection = -1;
+		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN ) {
+			this.myMazeFrame.isAutoRequestFocus();
+			selectedDirection = this.keyPressed;
+			//go to pause menu
+			if(selectedDirection == ESCAPE) {
+				showPauseMenu();
+				this.keyPressed = -1;
+			}
+		}
+		return selectedDirection;	
+	}
 
 	public void showMaze(final Maze theMaze) throws IOException {
 		// Create a pause button
@@ -74,30 +110,48 @@ public class Display implements Observer {
 			for(int j = 0; j < rooms[i].length; j++) {
 				// determine if question room, locked, key room, or goal.
 				Room currentRoom = rooms[i][j];
-				if(currentRoom.getIsGoal()) {
-					// is the goal, goal image
-					image = ImageIO.read(new File("./images/goal.jpg"));
-					picLabels[i][j] =  new JLabel(new ImageIcon(image));
-					name = "goal";
-				} else if(currentRoom.getIsKeyRoom()) {
-					// key room, label it key
-					image = ImageIO.read(new File("./images/key.jpg"));
-					picLabels[i][j] =  new JLabel(new ImageIcon(image));
-					name = "key";
-				} else if(currentRoom.getIsLocked()) { 
+				//check if player on 
+				
+				if(currentRoom.getIsLocked()) { 
 					// room is locked, label it locked
 					image = ImageIO.read(new File("./images/locked.jpg"));
 					picLabels[i][j] =  new JLabel(new ImageIcon(image));
 					name = "locked";
-				} else {
+				}
+				else if(currentRoom.getIsGoal()) {
+					// is the goal, goal image
+					image = ImageIO.read(new File("./images/goal.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "goal";
+				
+				}
+				
+				else if (currentRoom.getIsAcessible()) {
+					image = ImageIO.read(new File("./images/complete.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "goal";
+				}
+				 else if(currentRoom.getIsKeyRoom()) {
+					// key room, label it key
+					image = ImageIO.read(new File("./images/key.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "key";
+				}  else {
 					// room is accessible, label it with subject
-					image = ImageIO.read(new File("./images/IKEA.jpg"));
+					image = ImageIO.read(new File("./images/question.jpg"));
 					picLabels[i][j] =  new JLabel(new ImageIcon(image));
 					name = "IKEA";
 				}				
+				// XXX display current position
+				if(i == theMaze.getMyYPosition() && j == theMaze.getMyXPosition()) {
+					image = ImageIO.read(new File("./images/player.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "player";
+				}
 				// set mouse listeners and preferred size
 				picLabels[i][j].setPreferredSize(prefSize);
 				setImageMouseListener(picLabels[i][j], name, rooms[i][j].getMyQuestion());
+				
 			}
 		}
 		

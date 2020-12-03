@@ -106,7 +106,6 @@ Display currentDisplay;
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
 	
-	
 	@Test
 	void testPromptMovement() {
 		currentGame.promptMovement();

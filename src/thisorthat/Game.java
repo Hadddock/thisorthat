@@ -1,6 +1,4 @@
 package thisorthat;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Game implements KeyListener {
+public class Game {
 private static final int UP =  	38;
 private static final int RIGHT = 39;
 private static final int DOWN = 40;
@@ -25,40 +23,10 @@ private static final int ESCAPE = 27;
 	boolean isInPauseMenu;
 	boolean isFinished;
 	boolean fileExists;
-	int keyPressed;
-
-
-
-	public void keyPressed(KeyEvent e) {
-		keyPressed = e.getKeyCode();
-	}
-	public void keyReleased(KeyEvent e) {}
-
-	public void keyTyped(KeyEvent e) {}
 
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
-		this.myDisplay.myMazeFrame.addKeyListener(this);
-		this.myDisplay.myMazeFrame.setVisible(true);
-		this.myDisplay.myMazeFrame.toFront();
-		this.myDisplay.myMazeFrame.setDefaultCloseOperation(this.myDisplay.myMazeFrame.DISPOSE_ON_CLOSE);
-	}
-
-	int acceptMazeInput() {
-		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
-		this.keyPressed = -1;
-		int selectedDirection = -1;
-		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN ) {
-			this.myDisplay.myMazeFrame.isAutoRequestFocus();
-			selectedDirection = this.keyPressed;
-			//go to pause menu
-			if(selectedDirection == ESCAPE) {
-				myDisplay.showPauseMenu();
-				this.keyPressed = -1;
-			}
-		}
-		return selectedDirection;	
 	}
 
 	void receiveMovementSelection(int selectedDirection)  {
@@ -116,14 +84,6 @@ private static final int ESCAPE = 27;
 			this.myMaze.obtainKey();
 		}
 		
-	}
-
-	private void receivePauseSelection(int pause) {
-		isInPauseMenu = true;
-	}
-
-	public boolean checkWinCondition() {
-		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
 
 	public void saveGame() {
@@ -239,24 +199,18 @@ private static final int ESCAPE = 27;
 	}
 	
 	//For testing purposes only, not to be part of game
-	public void closeFrame() {
-		this.myDisplay.myMazeFrame.dispose();
-	}
-
-
-	int promptPauseMenu() {
-		return 0;
-	}
-
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
 		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.acceptMazeInput()); 
+			//replace with observer observable
+			testGame.myDisplay.showMaze(testGame.myMaze);
+			testGame.receiveMovementSelection(testGame.myDisplay.acceptMazeInput()); 
 		};
-		System.out.println(testGame.myMaze);
+		//display WinScreen
+		testGame.myDisplay.displayWinScreen();
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
 		testGame.myDisplay.myMazeFrame.dispose();
 		testGame = null;

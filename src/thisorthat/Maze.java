@@ -149,6 +149,11 @@ public class Maze extends Observable {
 		return false;
 	}
 	
+	public boolean checkWinCondition() {
+		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
+	}
+
+	
 	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
 	public List<Room> getNeighbors(int y, int x) {
 		List<Room> returnValue = new LinkedList<Room>();

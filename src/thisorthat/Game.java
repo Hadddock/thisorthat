@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
-
 import javax.swing.JFrame;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -31,6 +29,7 @@ private static final int LEFT = 37;
 	boolean fileExists;
 	int keyPressed;
 	String myFileName;
+
 	JFrame frame = new JFrame();
 
 	public void keyPressed(KeyEvent e) {
@@ -40,10 +39,10 @@ private static final int LEFT = 37;
 	public void keyReleased(KeyEvent e) {
 		
 	}
+	public void keyTyped(KeyEvent e) {}
 	
 	public void keyTyped(KeyEvent e) {}
 	
-
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
@@ -169,23 +168,6 @@ private static final int LEFT = 37;
 		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
 
-	public boolean checkWinPossible() {
-		
-		return false;
-	}
-
-	public boolean checkFileExists() {
-		File directory = new File(System.getProperty("user.dir"));
-		File[] files = directory.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().equalsIgnoreCase(myFileName)) {
-				fileExists = true;
-			}
-		}
-		return fileExists;
-		
-	}
-	
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("Give a file name: ");
@@ -303,15 +285,16 @@ private static final int LEFT = 37;
 		this.frame.dispose();
 	}
 	
+	public Maze getMyMaze() {
+		return this.myMaze;
+	}
+
 	public static void main(String[] args) {
+		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
-//		testGame.loadGame();
-//		testGame.checkFileExists();
 		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.promptMovement());
-//			testGame.exitGame();
-//			testGame.saveGame();
+			testGame.receiveMovementSelection(testGame.promptMovement()); 
 		};
 		System.out.println(testGame.myMaze);
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");

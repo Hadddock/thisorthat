@@ -23,6 +23,14 @@ public class Room {
 	 * If this room contains a key. Should become false after obtaining a key from this room.
 	 */
 	private boolean isKeyRoom;
+	/**
+	 * The X Coordinate of this room in its Maze.
+	 */
+	private int myXCoordinate;
+	/**
+	 * The Y Coordinate of this room in its Maze.
+	 */
+	private int myYCoordinate;
 
 	/*
 	 * Default Room for testing
@@ -72,6 +80,24 @@ public class Room {
 
 	boolean getIsKeyRoom() {
 		return isKeyRoom;
+	}
+
+	int getMyXCoordinate() {
+		return myXCoordinate;
+	}
+	
+	
+
+	void setMyXCoordinate(int myXCoordinate) {
+		this.myXCoordinate = myXCoordinate;
+	}
+
+	int getMyYCoordinate() {
+		return myYCoordinate;
+	}
+
+	void setMyYCoordinate(int myYCoordinate) {
+		this.myYCoordinate = myYCoordinate;
 	}
 
 	void setIsAcessible(boolean isAcessible) {

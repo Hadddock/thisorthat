@@ -239,4 +239,9 @@ public class Maze extends Observable {
 
 	}
 
+	public void setHasKey(boolean b) {
+		this.hasKey = b;
+		
+	}
+
 }

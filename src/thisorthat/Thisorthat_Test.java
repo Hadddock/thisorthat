@@ -179,9 +179,6 @@ Scanner scan = new Scanner(System.in);
 	void testSaveGame() {
 		//create a new save file
 		currentGame.saveGame();
-		Assert.assertTrue(currentGame.checkFileExists());
-		File saveFile = new File("saveFile.txt");
-		Assert.assertTrue(saveFile.exists());
 	}
 	
 	@Test
@@ -224,7 +221,7 @@ Scanner scan = new Scanner(System.in);
 	@Test
 	void testWinPosible() {
 		//winnable maze
-		Assert.assertTrue(currentGame.checkWinPossible());
+		Assert.assertTrue(currentMaze.checkWinPossible());
 		Room position = currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
 		currentGame.receiveMovementSelection(1);
     //create unwinnable conditions
@@ -238,7 +235,7 @@ Scanner scan = new Scanner(System.in);
 		currentMaze.getMyRooms()[0][2].setIsLocked(true);
 		currentMaze.getMyRooms()[2][2].setIsLocked(true);
 		//confirm unwinnable
-		Assert.assertFalse(currentGame.checkWinPossible());
+		Assert.assertFalse(currentMaze.checkWinPossible());
 	}
 	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	

@@ -15,7 +15,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 public class Game implements KeyListener {
 private static final int UP =  	38;
 private static final int RIGHT = 39;
@@ -40,8 +39,9 @@ private static final int LEFT = 37;
 		keyPressed = e.getKeyCode();
 	}
 	
+	public void keyReleased(KeyEvent e) {}
 
-
+	public void keyTyped(KeyEvent e) {}
 
 	
 	public Game(Maze theMaze, Display theDisplay) {
@@ -53,7 +53,7 @@ private static final int LEFT = 37;
 		frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
 	}
 
-	private int promptMovement() {
+	int promptMovement() {
 		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
 		this.keyPressed = -1;
 		int selectedDirection = -1;
@@ -78,7 +78,7 @@ private static final int LEFT = 37;
 		return selectedDirection;	
 	}
 
-	private boolean promptQuestion(int theRoomY, int theRoomX) {
+	boolean promptQuestion(int theRoomY, int theRoomX) {
 		Question currentQuestion =(myMaze.getMyRooms()[theRoomY][theRoomX].getMyQuestion());
 		System.out.println(currentQuestion.getMySubject());
 		//currently only supports two answer questions
@@ -99,7 +99,7 @@ private static final int LEFT = 37;
 		return (choice == currentQuestion.getMyCorrectAnswer());	
 	}
 
-	private void receiveMovementSelection(int selectedDirection)  {
+	void receiveMovementSelection(int selectedDirection)  {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
@@ -258,7 +258,7 @@ private static final int LEFT = 37;
 		}
 	}
 
-	private Maze getMyMaze() {
+	Maze getMyMaze() {
 		return this.myMaze;
 	}
 
@@ -283,16 +283,9 @@ private static final int LEFT = 37;
 	}
 
 
-	private int promptPauseMenu() {
+	int promptPauseMenu() {
 		return 0;
 	}
-
-	public void keyReleased(KeyEvent e) {}
-
-	public void keyTyped(KeyEvent e) {}
-
-
-
 
 
 	public static void main(String[] args) {

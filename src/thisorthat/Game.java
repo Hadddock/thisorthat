@@ -1,6 +1,8 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Set;
+import java.util.TreeSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,9 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
-
 import javax.swing.JFrame;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,38 +23,37 @@ private static final int LEFT = 37;
 
 	public Maze myMaze;
 	public Display myDisplay;
-
 	boolean isInMaze;
 	boolean isInQuestionMenu;
 	boolean isInPauseMenu;
 	boolean isFinished;
 	boolean fileExists;
 	int keyPressed;
-	String myFileName;
+
 	JFrame frame = new JFrame();
+	
+
+	
 
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
 	
-	public void keyReleased(KeyEvent e) {
-		
-	}
-	
-	public void keyTyped(KeyEvent e) {}
-	
+	public void keyReleased(KeyEvent e) {}
 
+	public void keyTyped(KeyEvent e) {}
+
+	
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
 		frame.addKeyListener(this);
 		frame.setVisible(true);
 		frame.toFront();
-		frame.requestFocus();
 		frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
 	}
 
-	public int promptMovement() {
+	int promptMovement() {
 		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
 		this.keyPressed = -1;
 		int selectedDirection = -1;
@@ -79,7 +78,7 @@ private static final int LEFT = 37;
 		return selectedDirection;	
 	}
 
-	public boolean promptQuestion(int theRoomY, int theRoomX) {
+	boolean promptQuestion(int theRoomY, int theRoomX) {
 		Question currentQuestion =(myMaze.getMyRooms()[theRoomY][theRoomX].getMyQuestion());
 		System.out.println(currentQuestion.getMySubject());
 		//currently only supports two answer questions
@@ -100,11 +99,7 @@ private static final int LEFT = 37;
 		return (choice == currentQuestion.getMyCorrectAnswer());	
 	}
 
-	public int promptPauseMenu() {
-		return 0;
-	}
-
-	public void receiveMovementSelection(int selectedDirection)  {
+	void receiveMovementSelection(int selectedDirection)  {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
@@ -128,16 +123,15 @@ private static final int LEFT = 37;
 			handleMovement(dy,dx);
 		}
 	}
+	
+	
 
 	private void handleMovement(int dy, int dx) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() +dy][this.myMaze.getMyXPosition() + dx];
 		boolean moveRooms = false;
-		// check out of bounds
 
-		// if moving to cleared room
 		if (attemptedRoom.getIsAcessible()) {
 			moveRooms = true;
-			// if at goal
 			if (attemptedRoom.getIsGoal())
 				this.isFinished = true;
 		}
@@ -161,31 +155,16 @@ private static final int LEFT = 37;
 		}
 	}
 
-	public void receivePauseSelection(int pause) {
+	private void receivePauseSelection(int pause) {
 		isInPauseMenu = true;
 	}
+
 
 	public boolean checkWinCondition() {
 		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
 
-	public boolean checkWinPossible() {
-		
-		return false;
-	}
 
-	public boolean checkFileExists() {
-		File directory = new File(System.getProperty("user.dir"));
-		File[] files = directory.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().equalsIgnoreCase(myFileName)) {
-				fileExists = true;
-			}
-		}
-		return fileExists;
-		
-	}
-	
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("Give a file name: ");
@@ -279,7 +258,7 @@ private static final int LEFT = 37;
 		}
 	}
 
-	public Maze getMyMaze() {
+	Maze getMyMaze() {
 		return this.myMaze;
 	}
 
@@ -302,16 +281,19 @@ private static final int LEFT = 37;
 	public void closeFrame() {
 		this.frame.dispose();
 	}
-	
+
+
+	int promptPauseMenu() {
+		return 0;
+	}
+
+
 	public static void main(String[] args) {
+		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
-//		testGame.loadGame();
-//		testGame.checkFileExists();
 		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.promptMovement());
-//			testGame.exitGame();
-//			testGame.saveGame();
+			testGame.receiveMovementSelection(testGame.promptMovement()); 
 		};
 		System.out.println(testGame.myMaze);
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
@@ -320,3 +302,4 @@ private static final int LEFT = 37;
 	}
 
 }
+

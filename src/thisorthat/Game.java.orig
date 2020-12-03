@@ -1,8 +1,11 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+<<<<<<< HEAD
 import java.util.Set;
 import java.util.TreeSet;
+
+=======
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 import javax.swing.JFrame;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,28 +27,44 @@ private static final int LEFT = 37;
 
 	public Maze myMaze;
 	public Display myDisplay;
+
 	boolean isInMaze;
 	boolean isInQuestionMenu;
 	boolean isInPauseMenu;
 	boolean isFinished;
 	boolean fileExists;
 	int keyPressed;
+<<<<<<< HEAD
+	
+=======
+	String myFileName;
 
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 	JFrame frame = new JFrame();
 	
-
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Game testGame = new Game(new Maze(), new Display());
+		//keep going until goal is reached
+		while(!testGame.isFinished) {
+			testGame.receiveMovementSelection(testGame.promptMovement()); 
+		};
+		System.out.println(testGame.myMaze);
+		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
+		testGame.frame.dispose();
+		testGame = null;
+	}
 	
-
+<<<<<<< HEAD
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
-	
-	public void keyReleased(KeyEvent e) {}
-
+	Game(Maze theMaze, Display theDisplay) {
+=======
 	public void keyTyped(KeyEvent e) {}
-
 	
 	public Game(Maze theMaze, Display theDisplay) {
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
 		frame.addKeyListener(this);
@@ -53,7 +73,7 @@ private static final int LEFT = 37;
 		frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
 	}
 
-	int promptMovement() {
+	private int promptMovement() {
 		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
 		this.keyPressed = -1;
 		int selectedDirection = -1;
@@ -78,7 +98,7 @@ private static final int LEFT = 37;
 		return selectedDirection;	
 	}
 
-	boolean promptQuestion(int theRoomY, int theRoomX) {
+	private boolean promptQuestion(int theRoomY, int theRoomX) {
 		Question currentQuestion =(myMaze.getMyRooms()[theRoomY][theRoomX].getMyQuestion());
 		System.out.println(currentQuestion.getMySubject());
 		//currently only supports two answer questions
@@ -99,7 +119,7 @@ private static final int LEFT = 37;
 		return (choice == currentQuestion.getMyCorrectAnswer());	
 	}
 
-	void receiveMovementSelection(int selectedDirection)  {
+	private void receiveMovementSelection(int selectedDirection)  {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
@@ -159,11 +179,20 @@ private static final int LEFT = 37;
 		isInPauseMenu = true;
 	}
 
-
+<<<<<<< HEAD
+	
+		
+		//replace with variable in Maze tracking goal location
+		
+		
+		
+		
+	
+=======
 	public boolean checkWinCondition() {
 		return this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal();
 	}
-
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943
 
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
@@ -258,7 +287,7 @@ private static final int LEFT = 37;
 		}
 	}
 
-	Maze getMyMaze() {
+	private Maze getMyMaze() {
 		return this.myMaze;
 	}
 
@@ -281,12 +310,22 @@ private static final int LEFT = 37;
 	public void closeFrame() {
 		this.frame.dispose();
 	}
+<<<<<<< HEAD
 
-
-	int promptPauseMenu() {
+	private int promptPauseMenu() {
 		return 0;
 	}
 
+	public void keyReleased(KeyEvent e) {}
+
+	public void keyTyped(KeyEvent e) {}
+
+}
+=======
+	
+	public Maze getMyMaze() {
+		return this.myMaze;
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -302,4 +341,4 @@ private static final int LEFT = 37;
 	}
 
 }
-
+>>>>>>> fcf11346be1dde1a9c4f4ca0f90ea84988b13943

@@ -1,16 +1,12 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Set;
-import java.util.TreeSet;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
-import javax.swing.JFrame;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,6 +16,7 @@ private static final int UP =  	38;
 private static final int RIGHT = 39;
 private static final int DOWN = 40;
 private static final int LEFT = 37;
+private static final int ESCAPE = 27;
 
 	public Maze myMaze;
 	public Display myDisplay;
@@ -30,12 +27,11 @@ private static final int LEFT = 37;
 	boolean fileExists;
 	int keyPressed;
 
-	JFrame frame = new JFrame();
+
 
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
-	
 	public void keyReleased(KeyEvent e) {}
 
 	public void keyTyped(KeyEvent e) {}
@@ -43,56 +39,26 @@ private static final int LEFT = 37;
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
-		frame.addKeyListener(this);
-		frame.setVisible(true);
-		frame.toFront();
-		frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
+		this.myDisplay.myMazeFrame.addKeyListener(this);
+		this.myDisplay.myMazeFrame.setVisible(true);
+		this.myDisplay.myMazeFrame.toFront();
+		this.myDisplay.myMazeFrame.setDefaultCloseOperation(this.myDisplay.myMazeFrame.DISPOSE_ON_CLOSE);
 	}
 
-	int promptMovement() {
+	int acceptMazeInput() {
 		System.out.println("\nChoose which direction to go: \n" + this.myMaze);
 		this.keyPressed = -1;
 		int selectedDirection = -1;
-		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN) {
-			frame.isAutoRequestFocus();
+		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN ) {
+			this.myDisplay.myMazeFrame.isAutoRequestFocus();
 			selectedDirection = this.keyPressed;
-		}
-		switch (selectedDirection) {
-		case UP:
-			selectedDirection = 0;
-			break;
-		case RIGHT:
-			selectedDirection = 1;
-			break;
-		case DOWN:
-			selectedDirection = 2;
-			break;
-		case LEFT:
-			selectedDirection = 3;
-			break;
+			//go to pause menu
+			if(selectedDirection == ESCAPE) {
+				myDisplay.showPauseMenu();
+				this.keyPressed = -1;
+			}
 		}
 		return selectedDirection;	
-	}
-
-	boolean promptQuestion(int theRoomY, int theRoomX) {
-		Question currentQuestion =(myMaze.getMyRooms()[theRoomY][theRoomX].getMyQuestion());
-		System.out.println(currentQuestion.getMySubject());
-		//currently only supports two answer questions
-		System.out.println("PRESS LEFT IF IT'S " + currentQuestion.getMyAnswers()[0] );
-		System.out.println("PRESS RIGHT IF IT'S " + currentQuestion.getMyAnswers()[1] );
-		this.keyPressed = 0;
-		int choice = -1;
-		while(choice != LEFT &&  choice!=RIGHT) {
-			frame.isAutoRequestFocus();
-			choice = this.keyPressed;
-		}
-		if(choice == LEFT) {
-			choice = 0;
-		}
-		else {
-			choice = 1;
-		}
-		return (choice == currentQuestion.getMyCorrectAnswer());	
 	}
 
 	void receiveMovementSelection(int selectedDirection)  {
@@ -100,18 +66,20 @@ private static final int LEFT = 37;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
 		switch (selectedDirection) {
-		case 0:
+		case UP:
 			dy--;
 			break;
-		case 1:
+		case RIGHT:
 			dx++;
 			break;
-		case 2:
+		case DOWN:
 			dy++;
 			break;
-		case 3:
+		case LEFT:
 			dx--;
 			break;
+		case ESCAPE:
+			
 		}
 		//handleMovement if InBounds
 		if (x + dx >= 0 && x + dx <= this.myMaze.getMyRooms()[0].length - 1 && y + dy >= 0
@@ -120,7 +88,6 @@ private static final int LEFT = 37;
 		}
 	}
 	
-
 	private void handleMovement(int dy, int dx) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() +dy][this.myMaze.getMyXPosition() + dx];
 		boolean moveRooms = false;
@@ -136,7 +103,7 @@ private static final int LEFT = 37;
 		}
 		// if moving to question room, prompt the question for that room
 		else if (!attemptedRoom.getIsAcessible()) {
-			boolean correct = promptQuestion(this.myMaze.getMyYPosition() + dy, this.myMaze.getMyXPosition() + dx);
+			boolean correct  = myDisplay.showQuestion(attemptedRoom.getMyQuestion());
 			moveRooms = correct;
 			attemptedRoom.setIsAcessible(correct);
 			attemptedRoom.setIsLocked(!correct);
@@ -148,6 +115,7 @@ private static final int LEFT = 37;
 			this.myMaze.useKey();
 			this.myMaze.obtainKey();
 		}
+		
 	}
 
 	private void receivePauseSelection(int pause) {
@@ -161,7 +129,7 @@ private static final int LEFT = 37;
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("Give a file name: ");
-		myFileName = console.nextLine() + ".json";
+		String myFileName = console.nextLine() + ".json";
 		console.close();
 		JSONObject obj3 = new JSONObject();
 		int roomNum = 1;
@@ -272,7 +240,7 @@ private static final int LEFT = 37;
 	
 	//For testing purposes only, not to be part of game
 	public void closeFrame() {
-		this.frame.dispose();
+		this.myDisplay.myMazeFrame.dispose();
 	}
 
 
@@ -286,41 +254,13 @@ private static final int LEFT = 37;
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
 		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.promptMovement()); 
+			testGame.receiveMovementSelection(testGame.acceptMazeInput()); 
 		};
 		System.out.println(testGame.myMaze);
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
-		testGame.frame.dispose();
+		testGame.myDisplay.myMazeFrame.dispose();
 		testGame = null;
-		Display test = new Display();
-		Room[][] testRooms = new Room[3][3];
-		// make Gullunge/basic question room
-		Room testRoomGullenge = new Room(new Question(), false, false, false, false);
-		testRooms[0][0] = new Room(testRoomGullenge);
-		testRooms[0][2] = new Room(testRoomGullenge);
-		testRooms[1][2] = new Room(testRoomGullenge);
-		testRooms[2][0] = new Room(testRoomGullenge);
-		testRooms[2][2] = new Room(testRoomGullenge);
 		
-		//make start room
-		testRooms[1][1] = new Room(new Question(), true, false, false, false);
-
-		// make goal room
-		testRooms[0][1] = new Room(new Question(), true, false, true, false);
-		// make key room
-		testRooms[1][0] = new Room(new Question(), false, false, false, true);
-
-		// make locked room
-		testRooms[2][1] = new Room(new Question(), false, true, false, false);
-
-		int testYPosition = 1;
-		int testXPositon = 1;
-		boolean testKeyStatus = false;
-		Maze currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
-		test.showMaze(currentMaze);
-//		test.showPauseMenu();
-//		test.displayWinScreen();
-//		test.displayLoseScreen();
 
 	}
 

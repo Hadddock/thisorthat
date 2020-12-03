@@ -12,6 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -23,21 +25,26 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
-public class Display {
+@SuppressWarnings("deprecation")
+public class Display implements Observer {
 	private JWindow myWindow;
 	public JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
+	private boolean correct;
+	private boolean unanswered = true;
 
 	public Display() {
 		myMazeFrame = new JFrame("Maze");
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
+		
 	}
+	
+	
 
 	public void showMaze(final Maze theMaze) throws IOException {
-
 		// Create a pause button
 		JButton pause = new JButton();
 		pause.setPreferredSize(new Dimension(107, 43));
@@ -94,9 +101,6 @@ public class Display {
 			}
 		}
 		
-		
-		
-		
 		// Setting up the GridBagLayOut
 		mazePanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -105,8 +109,8 @@ public class Display {
 		BufferedImage blank = ImageIO.read(new File("./images/blank.png"));
 		BufferedImage horLine = ImageIO.read(new File("./images/horizontalLine.png"));
 		int acc;
-		int rowLength = picLabels[0].length + 2;
-		for(int i = 0; i < picLabels.length + 2; i++) {
+		int rowLength = 2 * picLabels[0].length -1;
+		for(int i = 0; i < 2 * picLabels.length -1; i++) {
 			acc = 0;
 			for(int j = 0; j < rowLength; j++) {
 				if(i % 2 == 0) { //Image row
@@ -144,9 +148,6 @@ public class Display {
 		mazePanel.setBackground(Color.BLACK);
 		myMazeFrame.add(mazePanel, BorderLayout.CENTER);
 		
-		
-		
-
 		// Frame setup
 		myMazeFrame.add(menu, BorderLayout.SOUTH);
 		myMazeFrame.setPreferredSize(new Dimension(800,600));
@@ -172,7 +173,7 @@ public class Display {
 		}));
 	}
 	
-	public void showQuestion(final Question theQuestion) {
+	public boolean showQuestion(final Question theQuestion) {
 		JLabel question = new JLabel(theQuestion.getMySubject(), SwingConstants.CENTER);
 		// answerOne button and listener
 		JButton answerOne = new JButton(theQuestion.getMyAnswers()[0]);
@@ -181,10 +182,14 @@ public class Display {
 			public void actionPerformed(final ActionEvent theEvent) {
 				if(theQuestion.getMyCorrectAnswer() == 0) {
 					JOptionPane.showMessageDialog(null, "Correct!");
+					correct = true;
+					
 				} else {
 					JOptionPane.showMessageDialog(null, "Incorrect!");
+					correct = false;
 				}
 				myQuestionFrame.dispose();
+				unanswered = false;
 			}
 		});
 		// answerTwo button and listener
@@ -194,13 +199,15 @@ public class Display {
 			public void actionPerformed(final ActionEvent theEvent) {
 				if(theQuestion.getMyCorrectAnswer() == 1) {
 					JOptionPane.showMessageDialog(null, "Correct!");
+					correct = true;
 				} else {
 					JOptionPane.showMessageDialog(null, "Incorrect!");
+					correct = false;
 				}
 				myQuestionFrame.dispose();
+				unanswered = false;
 			}
 		});
-		
 		JPanel answerMenu = new JPanel();
 		answerMenu.add(answerOne);
 		answerMenu.add(answerTwo);
@@ -213,6 +220,17 @@ public class Display {
 		myQuestionFrame.toFront();
 		myQuestionFrame.requestFocus();
 		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
+		while(unanswered) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		unanswered = true;
+		return correct;
+		
 	}
 
 	public void showPauseMenu(){
@@ -295,7 +313,6 @@ public class Display {
 		winFrame.toFront();
 		winFrame.requestFocus();
 		winFrame.setDefaultCloseOperation(winFrame.DISPOSE_ON_CLOSE);
-
 	}
 
 	public void displayLoseScreen() {
@@ -312,5 +329,11 @@ public class Display {
 		loseFrame.toFront();
 		loseFrame.requestFocus();
 		loseFrame.setDefaultCloseOperation(loseFrame.DISPOSE_ON_CLOSE);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

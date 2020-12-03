@@ -2,9 +2,9 @@ package thisorthat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.io.File;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
@@ -14,13 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class Thisorthat_Test {
-public static final int UP = 0;
-public static final int RIGHT = 1;
-public static final int DOWN = 2;
-public static final int LEFT = 3;
-
 Maze currentMaze;
 Game currentGame;
+Display currentDisplay;
 Scanner scan = new Scanner(System.in);
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
@@ -69,8 +65,8 @@ Scanner scan = new Scanner(System.in);
 		int testXPositon = 1;
 		boolean testKeyStatus = false;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
-		//TODO replace null with the test display variable
-		currentGame = new Game(currentMaze, null);
+		currentDisplay = new Display();
+		currentGame = new Game(currentMaze, currentDisplay);
 	}
 
 	@AfterEach
@@ -90,46 +86,42 @@ Scanner scan = new Scanner(System.in);
 		//check that the player now has the key, and the room they got the key from no longer has a key
 		Assert.assertTrue(currentMaze.getHasKey());
 		Assert.assertFalse(currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
+		
 	}
-
-	@Test
-	void testCheckWinPossible() {
-		assertTrue(currentMaze.checkWinPossible());
-	}
+	
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
-	
-	
 	@Test
 	void testPromptMovement() {
 		currentGame.promptMovement();
 	}
 	
-	//be prepared for this test to fail once we implement the code that ends the game after winning
 	@Test
 	void testRecieveMovementSelectionUp() {
-
-		currentGame.receiveMovementSelection(UP);
-		//Assert.assertEquals(currentMaze.getMyRooms()[0][1], currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()]);
-		Assert.assertTrue(currentMaze.getMyYPosition() == 0 && currentMaze.getMyXPosition() == 1);
+		currentGame.receiveMovementSelection(0);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(0, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionLeft() {
-		currentGame.receiveMovementSelection(LEFT);
-		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 0);
+		currentGame.receiveMovementSelection(3);
+		Assert.assertEquals(0, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionRight() {
-		currentGame.receiveMovementSelection(RIGHT);
-		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 2);
+		currentGame.receiveMovementSelection(1);
+		Assert.assertEquals(2, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
 	void testRecieveMovementSelectionDownLocked() {
-		currentGame.receiveMovementSelection(DOWN);
-		Assert.assertTrue(currentMaze.getMyYPosition() == 1 && currentMaze.getMyXPosition() == 1);
+		currentGame.receiveMovementSelection(2);
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 	
 	@Test
@@ -142,16 +134,18 @@ Scanner scan = new Scanner(System.in);
 	
 	@Test
 	void testRecieveMovementSelectionLeftRight() {
+		//press left, then right arrow key when testing
 		currentGame.receiveMovementSelection(3);
-		Assert.assertEquals(0, currentMaze.getMyXPosition());
+		Assert.assertEquals(1, currentMaze.getMyXPosition());
 		Assert.assertEquals(1, currentMaze.getMyYPosition());
 		currentGame.receiveMovementSelection(1);
-		Assert.assertEquals(1, currentMaze.getMyXPosition());
+		Assert.assertEquals(2, currentMaze.getMyXPosition());
 		Assert.assertEquals(1, currentMaze.getMyYPosition());
 	}
 
 	@Test
 	void testPromptQuestionSelectionUnlocked1() {
+		//press the right arrow key three times
 		promptQuestionSelection(0, 0);
 		promptQuestionSelection(1, 0);
 		promptQuestionSelection(3, 0);
@@ -172,12 +166,13 @@ Scanner scan = new Scanner(System.in);
 	
 	@Test
 	void testPauseMenu() {
+		//TODO fix
 		Assert.assertEquals(2, currentGame.promptPauseMenu());
 	}
 	
 	@Test
 	void testSaveGame() {
-		//create a new save file
+		//TODO fix, create a new save file
 		currentGame.saveGame();
 	}
 	
@@ -189,55 +184,79 @@ Scanner scan = new Scanner(System.in);
 		int xComparison = currentMaze.getMyXPosition();
 		int yComparison = currentMaze.getMyYPosition();
 		
-		currentGame.saveGame();
 		currentGame.loadGame();
 		
 		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
 		assertTrue(currentGame.getMyMaze().getHasKey() == keyComparison);
 		assertTrue(currentGame.getMyMaze().getMyXPosition() == xComparison);
 		assertTrue(currentGame.getMyMaze().getMyYPosition() == yComparison);
-
 		currentGame.receiveMovementSelection(1);
 		//confirm different
 		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
 	}
 	@Test
 	void testExitGame() {
+		//TODO fix
 		currentGame.exitGame();
 	}
 	
 	@Test
-	void testWinConditionTrue() {
-		currentGame.receiveMovementSelection(UP);
-		Assert.assertTrue(currentGame.checkWinCondition());
-
-	}
-	
-	@Test
-	void testWinConditionFalse() {
+	void testWinCondition() {
+		//TODO fix AssertionError
+		Room goal = currentMaze.getMyRooms()[0][1];
+		Room current = currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
 		Assert.assertFalse(currentGame.checkWinCondition());
+		currentGame.receiveMovementSelection(1);
+		Assert.assertFalse(currentGame.checkWinCondition());
+		currentGame.receiveMovementSelection(0);
+		Assert.assertFalse(currentGame.checkWinCondition());
+		currentGame.receiveMovementSelection(3);
+		Assert.assertTrue(currentGame.checkWinCondition());		
 	}
 	
 	@Test
 	void testWinPosible() {
-		//winnable maze
+		Room goal = currentMaze.getMyRooms()[0][1];
+		currentMaze.getMyRooms()[0][1].getIsAcessible();
 		Assert.assertTrue(currentMaze.checkWinPossible());
 		Room position = currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()];
 		currentGame.receiveMovementSelection(1);
-    //create unwinnable conditions
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()-1][currentMaze.getMyXPosition()].setIsLocked(true);
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()-1].setIsLocked(true);
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()+1][currentMaze.getMyXPosition()].setIsLocked(true);
-		currentMaze.getMyRooms()[1][2].setIsAcessible(true);
-		currentGame.receiveMovementSelection(RIGHT);
-		currentMaze.getMyRooms()[1][1].setIsLocked(true);
-		currentMaze.getMyRooms()[1][1].setIsAcessible(false);
-		currentMaze.getMyRooms()[0][2].setIsLocked(true);
-		currentMaze.getMyRooms()[2][2].setIsLocked(true);
-		//confirm unwinnable
 		Assert.assertFalse(currentMaze.checkWinPossible());
 	}
 	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
 
+	@Test
+	void testShowMaze() {
+		try {
+			currentDisplay.showMaze(currentMaze);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	void testShowQuestion() {
+		currentDisplay.showQuestion(currentMaze.getMyRooms()[0][0].getMyQuestion());
+	}
+	
+	@Test
+	void testShowPauseMenu() {
+		currentDisplay.showPauseMenu();
+	}
+	
+	@Test
+	void testDisplayWinScreen() {
+		currentDisplay.displayWinScreen();
+	}
+	
+	@Test
+	void testDisplayLoseScreen() {
+		currentDisplay.displayLoseScreen();
+	}
+	
 }

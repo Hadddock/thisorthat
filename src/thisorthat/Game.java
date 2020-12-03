@@ -1,8 +1,10 @@
 package thisorthat;
 
+import java.io.IOException;
+
 public class Game {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Display test = new Display();
 		Room[][] testRooms = new Room[3][3];
@@ -31,8 +33,8 @@ public class Game {
 		Maze currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
 		test.showMaze(currentMaze);
 //		test.showPauseMenu();
-//		test.displayWinScreen();
-//		test.displayLoseScreen();
+		test.displayWinScreen();
+		test.displayLoseScreen();
 	}
 
 }

@@ -10,8 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class Thisorthat_Test {
-Maze currentMaze;
-Display currentDisplay;
+	Maze currentMaze;
+	Display currentDisplay;
+
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -22,15 +23,10 @@ Display currentDisplay;
 	}
 
 	/*
-	 * Construct Test maze with this layout before each test
-	 * QGQ
-	 * KPQ
-	 * QLQ
+	 * Construct Test maze with this layout before each test QGQ KPQ QLQ
 	 * 
-	 * Q = Question Room
-	 * K = Key Room
-	 * G = Goal Room
-	 * P = Player's current position, accessible cleared room.
+	 * Q = Question Room K = Key Room G = Goal Room P = Player's current position,
+	 * accessible cleared room.
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
@@ -42,8 +38,8 @@ Display currentDisplay;
 		testRooms[1][2] = new Room(testRoomGullenge);
 		testRooms[2][0] = new Room(testRoomGullenge);
 		testRooms[2][2] = new Room(testRoomGullenge);
-		
-		//make start room
+
+		// make start room
 		testRooms[1][1] = new Room(new Question(), true, false, false, false);
 
 		// make goal room
@@ -58,8 +54,8 @@ Display currentDisplay;
 		int testXPositon = 1;
 		boolean testKeyStatus = false;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
-		
-		//stuff I've added
+
+		// stuff I've added
 		currentDisplay = new Display();
 	}
 
@@ -73,41 +69,41 @@ Display currentDisplay;
 		// false due to current room not containing key.
 		currentMaze.obtainKey();
 		Assert.assertFalse(currentMaze.getHasKey());
-		//true due to moving to being in a room with a key
+		// true due to moving to being in a room with a key
 		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
 		currentMaze.obtainKey();
-		//check that the player now has the key, and the room they got the key from no longer has a key
+		// check that the player now has the key, and the room they got the key from no
+		// longer has a key
 		Assert.assertTrue(currentMaze.getHasKey());
-		Assert.assertFalse(currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
-		
+		Assert.assertFalse(
+				currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
+
 	}
-	
+
 //CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
 
-	
-	
 //DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
 
 	@Test
 	void testShowMaze() {
 		currentDisplay.showMaze(currentMaze);
 	}
-	
+
 	@Test
 	void testShowQuestion() {
 		currentDisplay.showQuestion(currentMaze.getMyRooms()[0][0].getMyQuestion());
 	}
-	
+
 	@Test
 	void testShowPauseMenu() {
 		currentDisplay.showPauseMenu();
 	}
-	
+
 	@Test
 	void testDisplayWinScreen() {
 		currentDisplay.displayWinScreen();
 	}
-	
+
 	@Test
 	void testDisplayLoseScreen() {
 		currentDisplay.displayLoseScreen();

@@ -105,8 +105,8 @@ public class Display {
 		BufferedImage blank = ImageIO.read(new File("./images/blank.png"));
 		BufferedImage horLine = ImageIO.read(new File("./images/horizontalLine.png"));
 		int acc;
-		int rowLength = picLabels[0].length + 2;
-		for(int i = 0; i < picLabels.length + 2; i++) {
+		int rowLength = 2 * picLabels[0].length - 1;
+		for(int i = 0; i < 2 * picLabels.length -1; i++) {
 			acc = 0;
 			for(int j = 0; j < rowLength; j++) {
 				if(i % 2 == 0) { //Image row

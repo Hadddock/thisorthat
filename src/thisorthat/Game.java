@@ -1,6 +1,7 @@
 package thisorthat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +30,7 @@ private static final int LEFT = 37;
 	boolean isFinished;
 	boolean fileExists;
 	int keyPressed;
+	String myFileName;
 	JFrame frame = new JFrame();
 
 	public void keyPressed(KeyEvent e) {
@@ -38,6 +40,7 @@ private static final int LEFT = 37;
 	public void keyReleased(KeyEvent e) {
 		
 	}
+	
 	public void keyTyped(KeyEvent e) {}
 	
 
@@ -167,13 +170,26 @@ private static final int LEFT = 37;
 	}
 
 	public boolean checkWinPossible() {
+		
 		return false;
 	}
 
+	public boolean checkFileExists() {
+		File directory = new File(System.getProperty("user.dir"));
+		File[] files = directory.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].getName().equalsIgnoreCase(myFileName)) {
+				fileExists = true;
+			}
+		}
+		return fileExists;
+		
+	}
+	
 	public void saveGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("Give a file name: ");
-		String fileName = console.nextLine() + ".json";
+		myFileName = console.nextLine() + ".json";
 		console.close();
 		JSONObject obj3 = new JSONObject();
 		int roomNum = 1;
@@ -186,10 +202,14 @@ private static final int LEFT = 37;
 				obj2.put("isGoal", myMaze.getMyRooms()[i][j].getIsGoal());
 				obj2.put("isKeyRoom", myMaze.getMyRooms()[i][j].getIsKeyRoom());
 				JSONObject obj5 = new JSONObject();
-				obj5.put("mySubject", myMaze.getMyRooms()[i][j].getMyQuestion().getMySubject());
-				obj5.put("answer1", myMaze.getMyRooms()[i][j].getMyQuestion().getMyAnswers()[0]);
-				obj5.put("answer2", myMaze.getMyRooms()[i][j].getMyQuestion().getMyAnswers()[1]);
-				obj5.put("myCorrectAnswer", myMaze.getMyRooms()[i][j].getMyQuestion().getMyCorrectAnswer());
+				obj5.put("mySubject", myMaze.getMyRooms()[i][j].
+						getMyQuestion().getMySubject());
+				obj5.put("answer1", myMaze.getMyRooms()[i][j].
+						getMyQuestion().getMyAnswers()[0]);
+				obj5.put("answer2", myMaze.getMyRooms()[i][j].
+						getMyQuestion().getMyAnswers()[1]);
+				obj5.put("myCorrectAnswer", myMaze.getMyRooms()[i][j].
+						getMyQuestion().getMyCorrectAnswer());
 				obj2.put("Question", obj5);
 				obj4.put("Room"+roomNum, obj2);
 				roomNum++;
@@ -202,7 +222,7 @@ private static final int LEFT = 37;
 		try {
 			JSONObject obj = new JSONObject();
 			obj.put("Rooms", obj3);
-			PrintWriter pw = new PrintWriter(fileName);
+			PrintWriter pw = new PrintWriter(myFileName);
 			pw.write(obj.toJSONString()); 
 			pw.flush(); 
 			pw.close(); 
@@ -214,21 +234,20 @@ private static final int LEFT = 37;
 	public void loadGame() {
 		Scanner console = new Scanner(System.in);
 		System.out.println("What file would you like to load?: ");
-		String fileName = console.nextLine() + ".json";
+		String myFileName = console.nextLine() + ".json";
 		console.close();
 		try {
-			Object parse = new JSONParser().parse(new FileReader(fileName));
+			Object parse = new JSONParser().parse(new FileReader(myFileName));
 			JSONObject obj = (JSONObject) parse;
 			Map map = ((Map)obj.get("Rooms"));
 			Room[][] rooms = new Room[map.size()][map.size()];
+			fileExists = true;
 			int roomNum = 1;
 			int mapSize = map.size()/2;
-//			System.out.println(mapSize);
 			for (int i = 0; i < mapSize; i++) {
 				System.out.println(i);
 				Map map2 = ((Map)map.get("RoomArray" + (i+1)));
 				for (int j = 0; j < map2.size(); j++) {
-//					System.out.println(roomNum);
 					Map map3 = ((Map)map2.get("Room"+ roomNum));
 					roomNum++;
 				    boolean isAcessible = (Boolean)map3.get("isAcessible");
@@ -241,7 +260,8 @@ private static final int LEFT = 37;
 					answers[0] = (String)map4.get("answer1");
 					answers[1] = (String)map4.get("answer2");
 					int correctAnswer = Math.toIntExact((Long)map4.get("myCorrectAnswer"));
-					rooms[i][j] = new Room(new Question(subject, answers,correctAnswer), isAcessible, isLocked, isGoal, isKeyRoom);
+					rooms[i][j] = new Room(new Question(subject, answers,correctAnswer),
+							isAcessible, isLocked, isGoal, isKeyRoom);
 				}
 			}
 			myMaze.setMyXPosition(Math.toIntExact((Long)map.get("myXPosition")));
@@ -270,18 +290,27 @@ private static final int LEFT = 37;
 		console.close();
 		while (decision.equalsIgnoreCase("y")||decision.equalsIgnoreCase("n")) {
 			if (decision.equalsIgnoreCase("y")) {
-				this.frame.dispose();
+				System.exit(0);
 			} else {
-				//TODO exit save or load section and return to maze
+				//TODO exit pause menu
+				break;
 			}
 		}
 	}
+	
+	//For testing purposes only, not to be part of game
+	public void closeFrame() {
+		this.frame.dispose();
+	}
+	
 	public static void main(String[] args) {
 		Game testGame = new Game(new Maze(), new Display());
 		//keep going until goal is reached
-		testGame.loadGame();
+//		testGame.loadGame();
+//		testGame.checkFileExists();
 		while(!testGame.isFinished) {
-			testGame.receiveMovementSelection(testGame.promptMovement()); 
+			testGame.receiveMovementSelection(testGame.promptMovement());
+//			testGame.exitGame();
 //			testGame.saveGame();
 		};
 		System.out.println(testGame.myMaze);

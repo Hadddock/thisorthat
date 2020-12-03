@@ -2,6 +2,9 @@ package thisorthat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.Scanner;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 class Thisorthat_Test {
 Maze currentMaze;
 Game currentGame;
+Scanner scan = new Scanner(System.in);
 //SETUP-----------------------------------------------------------------------------------SETUP
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -165,19 +169,30 @@ Game currentGame;
 	void testSaveGame() {
 		//create a new save file
 		currentGame.saveGame();
-		Assert.assertEquals("saveFile.txt", currentGame.fileExists);
+		Assert.assertTrue(currentGame.checkFileExists());
 	}
 	
 	@Test
 	void testLoadGame() {
 		//check that the save file from testSaveGame is available to access
+		Room[][] roomComparison = currentMaze.getMyRooms();
+		boolean keyComparison = currentMaze.getHasKey();
+		int xComparison = currentMaze.getMyXPosition();
+		int yComparison = currentMaze.getMyYPosition();
+		
 		currentGame.loadGame();
-		Assert.assertTrue(currentGame.checkFileExists());
+		
+		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
+		assertTrue(currentGame.getMyMaze().getHasKey() == keyComparison);
+		assertTrue(currentGame.getMyMaze().getMyXPosition() == xComparison);
+		assertTrue(currentGame.getMyMaze().getMyYPosition() == yComparison);
+		currentGame.receiveMovementSelection(1);
+		//confirm different
+		assertTrue(Arrays.deepEquals(currentGame.getMyMaze().getMyRooms(), roomComparison));
 	}
-	
 	@Test
 	void testExitGame() {
-		currentGame.exitGame();	
+		currentGame.exitGame();
 	}
 	
 	@Test

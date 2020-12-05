@@ -1,6 +1,6 @@
 package thisorthat;
 
-public class Room {
+public class Room implements java.io.Serializable {
 	
 	/**
 	 * The question for this current room

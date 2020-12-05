@@ -1,6 +1,8 @@
 package thisorthat;
 
-public class Room {
+import java.util.Observable;
+
+public class Room extends Observable {
 	
 	/**
 	 * The question for this current room

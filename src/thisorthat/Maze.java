@@ -56,10 +56,12 @@ public class Maze extends Observable {
 
 	public void setMyYPosition(int myYPosition) {
 		this.myYPosition = myYPosition;
+		notifyObservers();
 	}
 
 	public void setMyXPosition(int myXPosition) {
 		this.myXPosition = myXPosition;
+		notifyObservers();
 	}
 
 	public boolean getHasKey() {
@@ -153,7 +155,6 @@ public class Maze extends Observable {
 		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
 	}
 
-	
 	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
 	public List<Room> getNeighbors(int y, int x) {
 		List<Room> returnValue = new LinkedList<Room>();
@@ -193,6 +194,7 @@ public class Maze extends Observable {
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
 			this.hasKey = true;
+			notifyObservers();
 		}
 	}
 	
@@ -201,6 +203,7 @@ public class Maze extends Observable {
 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
 			this.hasKey = false;
+			notifyObservers();
 		}
 	}
 
@@ -246,7 +249,7 @@ public class Maze extends Observable {
 
 	public void setHasKey(boolean b) {
 		this.hasKey = b;
-		
+		notifyObservers();
 	}
 
 }

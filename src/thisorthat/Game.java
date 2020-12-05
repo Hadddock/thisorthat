@@ -22,11 +22,11 @@ private static final int ESCAPE = 27;
 	boolean isInQuestionMenu;
 	boolean isInPauseMenu;
 	boolean isFinished;
-	boolean fileExists;
+	boolean fileExists; 
 
-	public Game(Maze theMaze, Display theDisplay) {
+	public Game(Maze theMaze) {
 		this.myMaze = theMaze;
-		this.myDisplay = theDisplay;
+		this.myDisplay = new Display(this.myMaze);
 	}
 
 	void receiveMovementSelection(int selectedDirection)  {
@@ -202,7 +202,7 @@ private static final int ESCAPE = 27;
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		Game testGame = new Game(new Maze(), new Display());
+		Game testGame = new Game(new Maze());
 		//keep going until goal is reached
 		while(!testGame.isFinished) {
 			//replace with observer observable
@@ -214,8 +214,6 @@ private static final int ESCAPE = 27;
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
 		testGame.myDisplay.myMazeFrame.dispose();
 		testGame = null;
-		
-
 	}
 
 }

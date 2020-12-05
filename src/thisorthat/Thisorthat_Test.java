@@ -73,11 +73,9 @@ Display currentDisplay;
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
 
 		//TODO replace null with the test display variable
-		currentGame = new Game(currentMaze, null);
+		currentGame = new Game(currentMaze);
 
-		
-		//stuff I've added
-		currentDisplay = new Display();
+
 	}
 
 	@AfterEach
@@ -247,7 +245,7 @@ Display currentDisplay;
 
 	@Test
 	void testShowMaze() throws IOException {
-		currentDisplay.showMaze(currentMaze);
+		currentGame.myDisplay.showMaze(currentMaze);
 	}
 	
 	@Test

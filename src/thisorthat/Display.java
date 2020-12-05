@@ -41,8 +41,9 @@ public class Display implements Observer, KeyListener {
 	private boolean correct;
 	private boolean unanswered = true;
 	int keyPressed;
+	private Observable observable;
 	
-	public Display() {
+	public Display(Maze theMaze) {
 		myMazeFrame = new JFrame("Maze");
 		myMazeFrame.addKeyListener(this);
 		myMazeFrame.setVisible(true);
@@ -51,7 +52,14 @@ public class Display implements Observer, KeyListener {
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
-		
+		//observable
+		this.observable = theMaze;
+		observable.addObserver(this);
+		for (int i = 0; i < theMaze.getMyRooms().length; i++) {
+			for (int j = 0; j < theMaze.getMyRooms()[i].length; j++) {
+				theMaze.getMyRooms()[i][j].addObserver(this);
+			}
+		}
 	}
 	
 	public void keyPressed(KeyEvent e) {

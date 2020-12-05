@@ -41,6 +41,7 @@ public class Display implements Observer, KeyListener {
 	private boolean correct;
 	private boolean unanswered = true;
 	int keyPressed;
+	private Game myGame;
 	
 	public Display() {
 		myMazeFrame = new JFrame("Maze");
@@ -51,7 +52,6 @@ public class Display implements Observer, KeyListener {
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
-		
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -323,7 +323,7 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
-				
+				myGame.saveGame();
 				JOptionPane.showMessageDialog(null, "Game saved!");
 			}
 		});
@@ -334,6 +334,7 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL LOAD ACTION WHEN I HAVE IT
+				myGame.loadGame();
 				JOptionPane.showMessageDialog(null, "Game loaded!");
 			}
 		});
@@ -383,6 +384,10 @@ public class Display implements Observer, KeyListener {
 		loseFrame.toFront();
 		loseFrame.requestFocus();
 		loseFrame.setDefaultCloseOperation(loseFrame.DISPOSE_ON_CLOSE);
+	}
+	
+	public void getGame(Game theGame) {
+		myGame = theGame;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package thisorthat;
 
-public class Question {
+public class Question implements java.io.Serializable {
 	/*
 	 * The Subject to be placed in one of the categories in myAnswers
 	 */

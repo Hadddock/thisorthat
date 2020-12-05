@@ -1,13 +1,14 @@
 package thisorthat;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Game {
 private static final int UP =  	38;
@@ -27,6 +28,7 @@ private static final int ESCAPE = 27;
 	public Game(Maze theMaze, Display theDisplay) {
 		this.myMaze = theMaze;
 		this.myDisplay = theDisplay;
+		myDisplay.getGame(this);
 	}
 
 	void receiveMovementSelection(int selectedDirection)  {
@@ -87,97 +89,36 @@ private static final int ESCAPE = 27;
 	}
 
 	public void saveGame() {
-		Scanner console = new Scanner(System.in);
-		System.out.println("Give a file name: ");
-		String myFileName = console.nextLine() + ".json";
-		console.close();
-		JSONObject obj3 = new JSONObject();
-		int roomNum = 1;
-		for (int i = 0; i < myMaze.getMyRooms().length; i++) {
-			JSONObject obj4 = new JSONObject();
-			for (int j = 0; j < myMaze.getMyRooms()[i].length; j++) {
-				JSONObject obj2 = new JSONObject();
-				obj2.put("isAcessible", myMaze.getMyRooms()[i][j].getIsAcessible());
-				obj2.put("isLocked", myMaze.getMyRooms()[i][j].getIsLocked());
-				obj2.put("isGoal", myMaze.getMyRooms()[i][j].getIsGoal());
-				obj2.put("isKeyRoom", myMaze.getMyRooms()[i][j].getIsKeyRoom());
-				JSONObject obj5 = new JSONObject();
-				obj5.put("mySubject", myMaze.getMyRooms()[i][j].
-						getMyQuestion().getMySubject());
-				obj5.put("answer1", myMaze.getMyRooms()[i][j].
-						getMyQuestion().getMyAnswers()[0]);
-				obj5.put("answer2", myMaze.getMyRooms()[i][j].
-						getMyQuestion().getMyAnswers()[1]);
-				obj5.put("myCorrectAnswer", myMaze.getMyRooms()[i][j].
-						getMyQuestion().getMyCorrectAnswer());
-				obj2.put("Question", obj5);
-				obj4.put("Room"+roomNum, obj2);
-				roomNum++;
-			}
-			obj3.put("RoomArray"+(i+1), obj4);
-			obj3.put("myXPosition", myMaze.getMyXPosition());
-			obj3.put("myYPosition", myMaze.getMyYPosition());
-			obj3.put("hasKey", myMaze.getHasKey());
-		}
 		try {
-			JSONObject obj = new JSONObject();
-			obj.put("Rooms", obj3);
-			PrintWriter pw = new PrintWriter(myFileName);
-			pw.write(obj.toJSONString()); 
-			pw.flush(); 
-			pw.close(); 
-		} catch (IOException e) { 
-			e.printStackTrace();
-		}
+	         FileOutputStream fileOut =
+	         new FileOutputStream("./triviaMaze.ser");
+	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         out.writeObject(myMaze);
+	         out.close();
+	         fileOut.close();
+	         System.out.printf("Serialized data is saved in /triviaMaze.ser");
+	      } catch (IOException i) {
+	         i.printStackTrace();
+	      }
 	}
 
 	public void loadGame() {
-		Scanner console = new Scanner(System.in);
-		System.out.println("What file would you like to load?: ");
-		String myFileName = console.nextLine() + ".json";
-		console.close();
+		Maze m = null;
 		try {
-			Object parse = new JSONParser().parse(new FileReader(myFileName));
-			JSONObject obj = (JSONObject) parse;
-			Map map = ((Map)obj.get("Rooms"));
-			Room[][] rooms = new Room[map.size()][map.size()];
-			fileExists = true;
-			int roomNum = 1;
-			int mapSize = map.size()/2;
-			for (int i = 0; i < mapSize; i++) {
-				System.out.println(i);
-				Map map2 = ((Map)map.get("RoomArray" + (i+1)));
-				for (int j = 0; j < map2.size(); j++) {
-					Map map3 = ((Map)map2.get("Room"+ roomNum));
-					roomNum++;
-				    boolean isAcessible = (Boolean)map3.get("isAcessible");
-					boolean isLocked = (Boolean)map3.get("isLocked");
-					boolean isGoal = (Boolean)map3.get("isGoal");
-					boolean isKeyRoom = (Boolean)map3.get("isKeyRoom");
-					Map map4 = (Map)map3.get("Question");
-					String subject = (String)map4.get("mySubject");
-					String[] answers = new String[2];
-					answers[0] = (String)map4.get("answer1");
-					answers[1] = (String)map4.get("answer2");
-					int correctAnswer = Math.toIntExact((Long)map4.get("myCorrectAnswer"));
-					rooms[i][j] = new Room(new Question(subject, answers,correctAnswer),
-							isAcessible, isLocked, isGoal, isKeyRoom);
-				}
-			}
-			myMaze.setMyXPosition(Math.toIntExact((Long)map.get("myXPosition")));
-			myMaze.setMyYPosition(Math.toIntExact((Long)map.get("myYPosition")));
-			myMaze.setHasKey((Boolean)map.get("hasKey"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	         FileInputStream fileIn = new FileInputStream("./triviaMaze.ser");
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         m = (Maze) in.readObject();
+	         in.close();
+	         fileIn.close();
+	      } catch (IOException i) {
+	         i.printStackTrace();
+	         return;
+	      } catch (ClassNotFoundException c) {
+	         System.out.println("Employee class not found");
+	         c.printStackTrace();
+	         return;
+	      }
 		}
-	}
 
 	Maze getMyMaze() {
 		return this.myMaze;
@@ -214,9 +155,6 @@ private static final int ESCAPE = 27;
 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
 		testGame.myDisplay.myMazeFrame.dispose();
 		testGame = null;
-		
-
 	}
 
 }
-

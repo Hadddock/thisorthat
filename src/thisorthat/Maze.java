@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class Maze extends Observable {
+public class Maze extends Observable implements java.io.Serializable{
 	private Room[][] myRooms;// the maze composed of a 2-D array of rooms
 	private int myYPosition;// current y location of player in Room, [myYPosition][].
 	private int myXPosition;// current x location of player in Room, [][myXPosition].
@@ -148,11 +148,6 @@ public class Maze extends Observable {
 		}
 		return false;
 	}
-	
-	public boolean checkWinCondition() {
-		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
-	}
-
 	
 	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
 	public List<Room> getNeighbors(int y, int x) {

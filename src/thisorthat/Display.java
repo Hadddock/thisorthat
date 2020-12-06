@@ -7,11 +7,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -23,21 +27,69 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
-public class Display {
+@SuppressWarnings("deprecation")
+public class Display implements Observer, KeyListener {
+	public static final int UP =  	38;
+	public static final int RIGHT = 39;
+	public static final int DOWN = 40;
+	public static final int LEFT = 37;
+	public static final int ESCAPE = 27;
+	public static final int SAVE = 5;
+	public static final int LOAD = 6;
+	public static final int RESUME = 7;
+	public static final int EXIT = 8;
 	private JWindow myWindow;
-	public JFrame myMazeFrame;
+	private JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
-
-	public Display() {
+	private int pauseSelection = 0;
+	private boolean correct;
+	private boolean unanswered = true;
+	int keyPressed;
+	private Observable observable;
+	
+	public Display(Maze theMaze) {
 		myMazeFrame = new JFrame("Maze");
+		myMazeFrame.addKeyListener(this);
+		myMazeFrame.setVisible(true);
+		myMazeFrame.toFront();
+		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
+		//observable
+		this.observable = theMaze;
+		observable.addObserver(this);
+		for (int i = 0; i < theMaze.getMyRooms().length; i++) {
+			for (int j = 0; j < theMaze.getMyRooms()[i].length; j++) {
+				theMaze.getMyRooms()[i][j].addObserver(this);
+			}
+		}
+	}
+	
+	public void keyPressed(KeyEvent e) {
+		keyPressed = e.getKeyCode();
+	}
+	public void keyReleased(KeyEvent e) {}
+
+	public void keyTyped(KeyEvent e) {}
+	
+	int acceptMazeInput() {
+		System.out.println("\nChoose which direction to go: \n");
+		myMazeFrame.toFront();
+		myMazeFrame.requestFocus();
+		
+		this.keyPressed = -1;
+		int selectedAction = -1;
+		while(selectedAction != LEFT && selectedAction !=RIGHT && selectedAction!= UP && selectedAction!= DOWN && selectedAction != ESCAPE ) {
+			this.myMazeFrame.isAutoRequestFocus();
+			selectedAction = this.keyPressed;
+			//go to pause menu
+		}	
+		return selectedAction;	
 	}
 
 	public void showMaze(final Maze theMaze) throws IOException {
-
 		// Create a pause button
 		JButton pause = new JButton();
 		pause.setPreferredSize(new Dimension(107, 43));
@@ -51,6 +103,7 @@ public class Display {
 			public void actionPerformed(final ActionEvent theEvent) {
 				showPauseMenu();
 			}
+			
 		});
 		menu.add(pause);
 		
@@ -67,35 +120,50 @@ public class Display {
 			for(int j = 0; j < rooms[i].length; j++) {
 				// determine if question room, locked, key room, or goal.
 				Room currentRoom = rooms[i][j];
-				if(currentRoom.getIsGoal()) {
-					// is the goal, goal image
-					image = ImageIO.read(new File("./images/goal.jpg"));
-					picLabels[i][j] =  new JLabel(new ImageIcon(image));
-					name = "goal";
-				} else if(currentRoom.getIsKeyRoom()) {
-					// key room, label it key
-					image = ImageIO.read(new File("./images/key.jpg"));
-					picLabels[i][j] =  new JLabel(new ImageIcon(image));
-					name = "key";
-				} else if(currentRoom.getIsLocked()) { 
+				//check if player on 
+				
+				if(currentRoom.getIsLocked()) { 
 					// room is locked, label it locked
 					image = ImageIO.read(new File("./images/locked.jpg"));
 					picLabels[i][j] =  new JLabel(new ImageIcon(image));
 					name = "locked";
-				} else {
+				}
+				else if(currentRoom.getIsGoal()) {
+					// is the goal, goal image
+					image = ImageIO.read(new File("./images/goal.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "goal";
+				
+				}
+				
+				else if (currentRoom.getIsAcessible()) {
+					image = ImageIO.read(new File("./images/complete.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "goal";
+				}
+				 else if(currentRoom.getIsKeyRoom()) {
+					// key room, label it key
+					image = ImageIO.read(new File("./images/key.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "key";
+				}  else {
 					// room is accessible, label it with subject
-					image = ImageIO.read(new File("./images/IKEA.jpg"));
+					image = ImageIO.read(new File("./images/question.jpg"));
 					picLabels[i][j] =  new JLabel(new ImageIcon(image));
 					name = "IKEA";
 				}				
+				// XXX display current position
+				if(i == theMaze.getMyYPosition() && j == theMaze.getMyXPosition()) {
+					image = ImageIO.read(new File("./images/player.jpg"));
+					picLabels[i][j] =  new JLabel(new ImageIcon(image));
+					name = "player";
+				}
 				// set mouse listeners and preferred size
 				picLabels[i][j].setPreferredSize(prefSize);
 				setImageMouseListener(picLabels[i][j], name, rooms[i][j].getMyQuestion());
+				
 			}
 		}
-		
-		
-		
 		
 		// Setting up the GridBagLayOut
 		mazePanel.setLayout(new GridBagLayout());
@@ -105,7 +173,7 @@ public class Display {
 		BufferedImage blank = ImageIO.read(new File("./images/blank.png"));
 		BufferedImage horLine = ImageIO.read(new File("./images/horizontalLine.png"));
 		int acc;
-		int rowLength = 2 * picLabels[0].length - 1;
+		int rowLength = 2 * picLabels[0].length -1;
 		for(int i = 0; i < 2 * picLabels.length -1; i++) {
 			acc = 0;
 			for(int j = 0; j < rowLength; j++) {
@@ -144,9 +212,6 @@ public class Display {
 		mazePanel.setBackground(Color.BLACK);
 		myMazeFrame.add(mazePanel, BorderLayout.CENTER);
 		
-		
-		
-
 		// Frame setup
 		myMazeFrame.add(menu, BorderLayout.SOUTH);
 		myMazeFrame.setPreferredSize(new Dimension(800,600));
@@ -172,7 +237,7 @@ public class Display {
 		}));
 	}
 	
-	public void showQuestion(final Question theQuestion) {
+	public boolean showQuestion(final Question theQuestion) {
 		JLabel question = new JLabel(theQuestion.getMySubject(), SwingConstants.CENTER);
 		// answerOne button and listener
 		JButton answerOne = new JButton(theQuestion.getMyAnswers()[0]);
@@ -181,10 +246,14 @@ public class Display {
 			public void actionPerformed(final ActionEvent theEvent) {
 				if(theQuestion.getMyCorrectAnswer() == 0) {
 					JOptionPane.showMessageDialog(null, "Correct!");
+					correct = true;
+					
 				} else {
 					JOptionPane.showMessageDialog(null, "Incorrect!");
+					correct = false;
 				}
 				myQuestionFrame.dispose();
+				unanswered = false;
 			}
 		});
 		// answerTwo button and listener
@@ -194,13 +263,15 @@ public class Display {
 			public void actionPerformed(final ActionEvent theEvent) {
 				if(theQuestion.getMyCorrectAnswer() == 1) {
 					JOptionPane.showMessageDialog(null, "Correct!");
+					correct = true;
 				} else {
 					JOptionPane.showMessageDialog(null, "Incorrect!");
+					correct = false;
 				}
 				myQuestionFrame.dispose();
+				unanswered = false;
 			}
 		});
-		
 		JPanel answerMenu = new JPanel();
 		answerMenu.add(answerOne);
 		answerMenu.add(answerTwo);
@@ -213,9 +284,20 @@ public class Display {
 		myQuestionFrame.toFront();
 		myQuestionFrame.requestFocus();
 		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
+		while(unanswered) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		unanswered = true;
+		return correct;
+		
 	}
 
-	public void showPauseMenu(){
+	public int showPauseMenu(){
 		JLabel paused = new JLabel("The game is paused.", SwingConstants.CENTER);
 		// create resume button and its action listener
 		JButton resume = new JButton();
@@ -225,8 +307,6 @@ public class Display {
 		save.setPreferredSize(prefButtonSize);
 		JButton load = new JButton("Load");
 		load.setPreferredSize(prefButtonSize);
-		
-		
 		try {
 			BufferedImage img = ImageIO.read(new File("./images/resume.png"));
 			resume.setIcon(new ImageIcon(img));
@@ -241,6 +321,7 @@ public class Display {
 		resume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
+				pauseSelection = RESUME;
 				myPauseFrame.dispose();
 			}
 		});
@@ -251,8 +332,10 @@ public class Display {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
-				
+				pauseSelection = SAVE;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game saved!");
+				;
 			}
 		});
 		
@@ -262,6 +345,8 @@ public class Display {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL LOAD ACTION WHEN I HAVE IT
+				pauseSelection = LOAD;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game loaded!");
 			}
 		});
@@ -280,6 +365,20 @@ public class Display {
 		myPauseFrame.toFront();
 		myPauseFrame.requestFocus();
 		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
+		 pauseSelection = -1;
+		while(pauseSelection == -1)	{
+			try {
+				myPauseFrame.requestFocus();
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.myMazeFrame.isAutoRequestFocus();
+		}
+		myMazeFrame.requestFocus();
+		return pauseSelection;
+		
 	}
 
 	public void displayWinScreen() {
@@ -295,7 +394,6 @@ public class Display {
 		winFrame.toFront();
 		winFrame.requestFocus();
 		winFrame.setDefaultCloseOperation(winFrame.DISPOSE_ON_CLOSE);
-
 	}
 
 	public void displayLoseScreen() {
@@ -312,5 +410,11 @@ public class Display {
 		loseFrame.toFront();
 		loseFrame.requestFocus();
 		loseFrame.setDefaultCloseOperation(loseFrame.DISPOSE_ON_CLOSE);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,0 +1,165 @@
+[33mcommit 4c5a8b45f2c6baeac13db2c168231f4dff4facbb[m[33m ([m[1;36mHEAD -> [m[1;32mJustin[m[33m)[m
+Author: Justin Haddock <jhadddock@protonmail.com>
+Date:   Sat Dec 5 15:28:17 2020 -0800
+
+    commit before pull
+
+[1mdiff --git a/src/thisorthat/Display.java b/src/thisorthat/Display.java[m
+[1mindex 4823172..71704d0 100644[m
+[1m--- a/src/thisorthat/Display.java[m
+[1m+++ b/src/thisorthat/Display.java[m
+[36m@@ -41,8 +41,9 @@[m [mpublic class Display implements Observer, KeyListener {[m
+ 	private boolean correct;[m
+ 	private boolean unanswered = true;[m
+ 	int keyPressed;[m
+[32m+[m	[32mprivate Observable observable;[m
+ 	[m
+[31m-	public Display() {[m
+[32m+[m	[32mpublic Display(Maze theMaze) {[m
+ 		myMazeFrame = new JFrame("Maze");[m
+ 		myMazeFrame.addKeyListener(this);[m
+ 		myMazeFrame.setVisible(true);[m
+[36m@@ -51,7 +52,14 @@[m [mpublic class Display implements Observer, KeyListener {[m
+ 		myQuestionFrame = new JFrame("Question");[m
+ 		myPauseFrame = new JFrame("Pause");[m
+ 		myWindow = new JWindow(myMazeFrame);[m
+[31m-		[m
+[32m+[m		[32m//observable[m
+[32m+[m		[32mthis.observable = theMaze;[m
+[32m+[m		[32mobservable.addObserver(this);[m
+[32m+[m		[32mfor (int i = 0; i < theMaze.getMyRooms().length; i++) {[m
+[32m+[m			[32mfor (int j = 0; j < theMaze.getMyRooms()[i].length; j++) {[m
+[32m+[m				[32mtheMaze.getMyRooms()[i][j].addObserver(this);[m
+[32m+[m			[32m}[m
+[32m+[m		[32m}[m
+ 	}[m
+ 	[m
+ 	public void keyPressed(KeyEvent e) {[m
+[1mdiff --git a/src/thisorthat/Game.java b/src/thisorthat/Game.java[m
+[1mindex 427e757..d1c56e4 100644[m
+[1m--- a/src/thisorthat/Game.java[m
+[1m+++ b/src/thisorthat/Game.java[m
+[36m@@ -22,11 +22,11 @@[m [mprivate static final int ESCAPE = 27;[m
+ 	boolean isInQuestionMenu;[m
+ 	boolean isInPauseMenu;[m
+ 	boolean isFinished;[m
+[31m-	boolean fileExists;[m
+[32m+[m	[32mboolean fileExists;[m[41m [m
+ [m
+[31m-	public Game(Maze theMaze, Display theDisplay) {[m
+[32m+[m	[32mpublic Game(Maze theMaze) {[m
+ 		this.myMaze = theMaze;[m
+[31m-		this.myDisplay = theDisplay;[m
+[32m+[m		[32mthis.myDisplay = new Display(this.myMaze);[m
+ 	}[m
+ [m
+ 	void receiveMovementSelection(int selectedDirection)  {[m
+[36m@@ -202,7 +202,7 @@[m [mprivate static final int ESCAPE = 27;[m
+ [m
+ 	public static void main(String[] args) throws IOException {[m
+ 		// TODO Auto-generated method stub[m
+[31m-		Game testGame = new Game(new Maze(), new Display());[m
+[32m+[m		[32mGame testGame = new Game(new Maze());[m
+ 		//keep going until goal is reached[m
+ 		while(!testGame.isFinished) {[m
+ 			//replace with observer observable[m
+[36m@@ -214,8 +214,6 @@[m [mprivate static final int ESCAPE = 27;[m
+ 		System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");[m
+ 		testGame.myDisplay.myMazeFrame.dispose();[m
+ 		testGame = null;[m
+[31m-		[m
+[31m-[m
+ 	}[m
+ [m
+ }[m
+[1mdiff --git a/src/thisorthat/Maze.java b/src/thisorthat/Maze.java[m
+[1mindex fe0128f..62f287e 100644[m
+[1m--- a/src/thisorthat/Maze.java[m
+[1m+++ b/src/thisorthat/Maze.java[m
+[36m@@ -56,10 +56,12 @@[m [mpublic class Maze extends Observable {[m
+ [m
+ 	public void setMyYPosition(int myYPosition) {[m
+ 		this.myYPosition = myYPosition;[m
+[32m+[m		[32mnotifyObservers();[m
+ 	}[m
+ [m
+ 	public void setMyXPosition(int myXPosition) {[m
+ 		this.myXPosition = myXPosition;[m
+[32m+[m		[32mnotifyObservers();[m
+ 	}[m
+ [m
+ 	public boolean getHasKey() {[m
+[36m@@ -153,7 +155,6 @@[m [mpublic class Maze extends Observable {[m
+ 		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();[m
+ 	}[m
+ [m
+[31m-	[m
+ 	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array[m
+ 	public List<Room> getNeighbors(int y, int x) {[m
+ 		List<Room> returnValue = new LinkedList<Room>();[m
+[36m@@ -193,6 +194,7 @@[m [mpublic class Maze extends Observable {[m
+ 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {[m
+ 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);[m
+ 			this.hasKey = true;[m
+[32m+[m			[32mnotifyObservers();[m
+ 		}[m
+ 	}[m
+ 	[m
+[36m@@ -201,6 +203,7 @@[m [mpublic class Maze extends Observable {[m
+ 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);[m
+ 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);[m
+ 			this.hasKey = false;[m
+[32m+[m			[32mnotifyObservers();[m
+ 		}[m
+ 	}[m
+ [m
+[36m@@ -246,7 +249,7 @@[m [mpublic class Maze extends Observable {[m
+ [m
+ 	public void setHasKey(boolean b) {[m
+ 		this.hasKey = b;[m
+[31m-		[m
+[32m+[m		[32mnotifyObservers();[m
+ 	}[m
+ [m
+ }[m
+[1mdiff --git a/src/thisorthat/Room.java b/src/thisorthat/Room.java[m
+[1mindex 5d2afce..62a96af 100644[m
+[1m--- a/src/thisorthat/Room.java[m
+[1m+++ b/src/thisorthat/Room.java[m
+[36m@@ -1,6 +1,8 @@[m
+ package thisorthat;[m
+ [m
+[31m-public class Room {[m
+[32m+[m[32mimport java.util.Observable;[m
+[32m+[m
+[32m+[m[32mpublic class Room extends Observable {[m
+ 	[m
+ 	/**[m
+ 	 * The question for this current room[m
+[1mdiff --git a/src/thisorthat/Thisorthat_Test.java b/src/thisorthat/Thisorthat_Test.java[m
+[1mindex 2029213..a722a1a 100644[m
+[1m--- a/src/thisorthat/Thisorthat_Test.java[m
+[1m+++ b/src/thisorthat/Thisorthat_Test.java[m
+[36m@@ -73,11 +73,9 @@[m [mDisplay currentDisplay;[m
+ 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);[m
+ [m
+ 		//TODO replace null with the test display variable[m
+[31m-		currentGame = new Game(currentMaze, null);[m
+[32m+[m		[32mcurrentGame = new Game(currentMaze);[m
+[32m+[m
+ [m
+[31m-		[m
+[31m-		//stuff I've added[m
+[31m-		currentDisplay = new Display();[m
+ 	}[m
+ [m
+ 	@AfterEach[m
+[36m@@ -247,7 +245,7 @@[m [mDisplay currentDisplay;[m
+ [m
+ 	@Test[m
+ 	void testShowMaze() throws IOException {[m
+[31m-		currentDisplay.showMaze(currentMaze);[m
+[32m+[m		[32mcurrentGame.myDisplay.showMaze(currentMaze);[m
+ 	}[m
+ 	[m
+ 	@Test[m

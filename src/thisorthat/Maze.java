@@ -2,12 +2,13 @@ package thisorthat;
 import java.util.Observable;
 import java.util.Set;
 import java.util.Stack;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class Maze extends Observable {
+public class Maze extends Observable implements Serializable {
 	private Room[][] myRooms;// the maze composed of a 2-D array of rooms
 	private int myYPosition;// current y location of player in Room, [myYPosition][].
 	private int myXPosition;// current x location of player in Room, [][myXPosition].
@@ -56,10 +57,12 @@ public class Maze extends Observable {
 
 	public void setMyYPosition(int myYPosition) {
 		this.myYPosition = myYPosition;
+		notifyObservers();
 	}
 
 	public void setMyXPosition(int myXPosition) {
 		this.myXPosition = myXPosition;
+		notifyObservers();
 	}
 
 	public boolean getHasKey() {
@@ -72,7 +75,7 @@ public class Maze extends Observable {
 		}
 		return false;
 	}
-	//XXX repeated code for second while loop, needs to go through process again with locked rooms
+	//TODO refactor repeated code for second while loop, needs to go through process again with locked rooms
 	//added in order to account for being able to reach the goal with the key
 	public boolean checkWinPossible() {
 		int x = myXPosition;
@@ -149,6 +152,10 @@ public class Maze extends Observable {
 		return false;
 	}
 	
+	public boolean checkWinCondition() {
+		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
+	}
+
 	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
 	public List<Room> getNeighbors(int y, int x) {
 		List<Room> returnValue = new LinkedList<Room>();
@@ -188,6 +195,7 @@ public class Maze extends Observable {
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
 			this.hasKey = true;
+			notifyObservers();
 		}
 	}
 	
@@ -196,6 +204,7 @@ public class Maze extends Observable {
 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
 			this.hasKey = false;
+			notifyObservers();
 		}
 	}
 
@@ -241,7 +250,7 @@ public class Maze extends Observable {
 
 	public void setHasKey(boolean b) {
 		this.hasKey = b;
-		
+		notifyObservers();
 	}
 
 }

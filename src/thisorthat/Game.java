@@ -30,7 +30,12 @@ public class Game {
 		int selectedAction;
 		int pauseSelection;
 		while (!this.isFinished) {
-			myDisplay.showMaze(this.myMaze);
+			try {
+				myDisplay.showMaze(this.myMaze);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			//get action from GUI
 			selectedAction = myDisplay.acceptMazeInput();
 			//check if the action is valid, if so perform

@@ -365,7 +365,7 @@ public class Display implements Observer, KeyListener {
 		myPauseFrame.toFront();
 		myPauseFrame.requestFocus();
 		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
-		pauseSelection = -1;
+		 pauseSelection = -1;
 		while(pauseSelection == -1)	{
 			try {
 				myPauseFrame.requestFocus();

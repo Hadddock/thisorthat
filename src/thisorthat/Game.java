@@ -26,7 +26,7 @@ public class Game {
 		this.myDisplay = new Display(this.myMaze);
 	}
 	
-	private void playGame()  {
+	private void playGame() throws IOException  {
 		int selectedAction;
 		int pauseSelection;
 		while (!this.isFinished) {
@@ -44,6 +44,9 @@ public class Game {
 			if(selectedAction == ESCAPE) {
 				pauseSelection = myDisplay.showPauseMenu();
 				performPauseSelection(pauseSelection);
+				if(pauseSelection == LOAD) {
+					myDisplay.showMaze(this.myMaze);
+				}
 			}
 			//if moving
 			else {
@@ -143,6 +146,7 @@ public class Game {
 	 */
 	private void saveGame() {
 		try {
+			
 			FileOutputStream fileOut = new FileOutputStream("./triviaMaze.ser");
 
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -164,6 +168,7 @@ public class Game {
 			FileInputStream fileIn = new FileInputStream("./triviaMaze.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			m = (Maze) in.readObject();
+			this.myMaze = m;
 			in.close();
 			fileIn.close();
 		} catch (IOException i) {

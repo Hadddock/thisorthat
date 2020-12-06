@@ -29,15 +29,20 @@ import javax.swing.SwingConstants;
 
 @SuppressWarnings("deprecation")
 public class Display implements Observer, KeyListener {
-	private static final int UP =  	38;
-	private static final int RIGHT = 39;
-	private static final int DOWN = 40;
-	private static final int LEFT = 37;
-	private static final int ESCAPE = 27;
+	public static final int UP =  	38;
+	public static final int RIGHT = 39;
+	public static final int DOWN = 40;
+	public static final int LEFT = 37;
+	public static final int ESCAPE = 27;
+	public static final int SAVE = 5;
+	public static final int LOAD = 6;
+	public static final int RESUME = 7;
+	public static final int EXIT = 8;
 	private JWindow myWindow;
-	public JFrame myMazeFrame;
+	private JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
+	private int pauseSelection = 0;
 	private boolean correct;
 	private boolean unanswered = true;
 	int keyPressed;
@@ -75,17 +80,13 @@ public class Display implements Observer, KeyListener {
 		myMazeFrame.requestFocus();
 		
 		this.keyPressed = -1;
-		int selectedDirection = -1;
-		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN ) {
+		int selectedAction = -1;
+		while(selectedAction != LEFT && selectedAction !=RIGHT && selectedAction!= UP && selectedAction!= DOWN && selectedAction != ESCAPE ) {
 			this.myMazeFrame.isAutoRequestFocus();
-			selectedDirection = this.keyPressed;
+			selectedAction = this.keyPressed;
 			//go to pause menu
-			if(selectedDirection == ESCAPE) {
-				showPauseMenu();
-				this.keyPressed = -1;
-			}
-		}
-		return selectedDirection;	
+		}	
+		return selectedAction;	
 	}
 
 	public void showMaze(final Maze theMaze) throws IOException {
@@ -102,6 +103,7 @@ public class Display implements Observer, KeyListener {
 			public void actionPerformed(final ActionEvent theEvent) {
 				showPauseMenu();
 			}
+			
 		});
 		menu.add(pause);
 		
@@ -295,7 +297,7 @@ public class Display implements Observer, KeyListener {
 		
 	}
 
-	public void showPauseMenu(){
+	public int showPauseMenu(){
 		JLabel paused = new JLabel("The game is paused.", SwingConstants.CENTER);
 		// create resume button and its action listener
 		JButton resume = new JButton();
@@ -305,8 +307,6 @@ public class Display implements Observer, KeyListener {
 		save.setPreferredSize(prefButtonSize);
 		JButton load = new JButton("Load");
 		load.setPreferredSize(prefButtonSize);
-		
-		
 		try {
 			BufferedImage img = ImageIO.read(new File("./images/resume.png"));
 			resume.setIcon(new ImageIcon(img));
@@ -321,6 +321,7 @@ public class Display implements Observer, KeyListener {
 		resume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
+				pauseSelection = RESUME;
 				myPauseFrame.dispose();
 			}
 		});
@@ -331,8 +332,10 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
-				
+				pauseSelection = SAVE;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game saved!");
+				;
 			}
 		});
 		
@@ -342,6 +345,8 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL LOAD ACTION WHEN I HAVE IT
+				pauseSelection = LOAD;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game loaded!");
 			}
 		});
@@ -360,6 +365,20 @@ public class Display implements Observer, KeyListener {
 		myPauseFrame.toFront();
 		myPauseFrame.requestFocus();
 		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
+		pauseSelection = -1;
+		while(pauseSelection == -1)	{
+			try {
+				myPauseFrame.requestFocus();
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.myMazeFrame.isAutoRequestFocus();
+		}
+		myMazeFrame.requestFocus();
+		return pauseSelection;
+		
 	}
 
 	public void displayWinScreen() {

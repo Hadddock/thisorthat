@@ -1,8 +1,9 @@
 package thisorthat;
 
+import java.io.Serializable;
 import java.util.Observable;
 
-public class Room extends Observable {
+public class Room extends Observable implements Serializable{
 	
 	/**
 	 * The question for this current room
@@ -88,10 +89,9 @@ public class Room extends Observable {
 		return myXCoordinate;
 	}
 	
-	
-
 	void setMyXCoordinate(int myXCoordinate) {
 		this.myXCoordinate = myXCoordinate;
+		this.notifyObservers();
 	}
 
 	int getMyYCoordinate() {
@@ -100,18 +100,22 @@ public class Room extends Observable {
 
 	void setMyYCoordinate(int myYCoordinate) {
 		this.myYCoordinate = myYCoordinate;
+		this.notifyObservers();
 	}
 
 	void setIsAcessible(boolean isAcessible) {
 		this.isAcessible = isAcessible;
+		this.notifyObservers();
 	}
 
 	void setIsLocked(boolean isLocked) {
 		this.isLocked = isLocked;
+		this.notifyObservers();
 	}
 
 	void setIsKeyRoom(boolean containsKey) {
 		this.isKeyRoom = containsKey;
+		this.notifyObservers();
 	}
 
 }

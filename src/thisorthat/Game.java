@@ -175,7 +175,6 @@ public class Game {
 			i.printStackTrace();
 			return;
 		} catch (ClassNotFoundException c) {
-			System.out.println("Employee class not found");
 			c.printStackTrace();
 			return;
 		}

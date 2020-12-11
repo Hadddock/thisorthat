@@ -2,7 +2,11 @@ package thisorthat;
 
 import java.io.Serializable;
 import java.util.Observable;
-
+/**
+ * 
+ * Room is an abstraction of a room for use in a Trivia maze program.
+ *
+ */
 public class Room extends Observable implements Serializable{
 	
 	/**
@@ -10,8 +14,8 @@ public class Room extends Observable implements Serializable{
 	 */
 	private Question myQuestion;
 	/**
-	 * Whether or not this room is freely movable to and from, starting location should always be acessible,
-	 * and cleared or unlocked room should become acessible. Any uncleared or locked room should be inacessible.
+	 * Whether or not this room is freely movable to and from, starting location should always be accessible,
+	 * and cleared or unlocked room should become accessible. Any uncleared or locked room should be inaccessible.
 	 */
 	private boolean isAcessible;
 	/**
@@ -61,60 +65,107 @@ public class Room extends Observable implements Serializable{
 		this.isLocked = copyRoom.getIsLocked();
 		this.isGoal = copyRoom.getIsGoal();
 		this.isKeyRoom = copyRoom.getIsKeyRoom();
-		
-		
 	}
-
+	
+	/**
+	 * Getter for myQuestion
+	 * @return myQuestion
+	 */
 	public Question getMyQuestion() {
 		return myQuestion;
 	}
-
+	/**
+	 * Getter for isAcessible
+	 * @return isAcessible
+	 */
 	boolean getIsAcessible() {
 		return isAcessible;
 	}
 
+	/**
+	 * Getter for isLocked
+	 * @return isLocked
+	 */
 	boolean getIsLocked() {
 		return isLocked;
 	}
-
+	
+	
+	/**
+	 * Getter for isGoal
+	 * @return isGoal
+	 */
 	boolean getIsGoal() {
 		return isGoal;
 	}
+	
 
+	/**
+	 * Getter for isKeyRoom
+	 * @return isKeyRoom
+	 */
 	boolean getIsKeyRoom() {
 		return isKeyRoom;
 	}
-
+	/**
+	 * Getter for myXCoordinate
+	 * @return myXCoordinate
+	 */
 	int getMyXCoordinate() {
 		return myXCoordinate;
 	}
 	
-	void setMyXCoordinate(int myXCoordinate) {
-		this.myXCoordinate = myXCoordinate;
+	/**
+	 * Setter for myXCoordinate
+	 * @param theXCoordinate, the new value for myXCoordinate
+	 */
+	void setMyXCoordinate(int theXCoordinate) {
+		this.myXCoordinate = theXCoordinate;
 		this.notifyObservers();
 	}
-
+	
+	/**
+	 * Getter for myYCoordinate
+	 * @return myYCoordinate
+	 */
 	int getMyYCoordinate() {
 		return myYCoordinate;
 	}
-
-	void setMyYCoordinate(int myYCoordinate) {
-		this.myYCoordinate = myYCoordinate;
+	
+	/**
+	 * Setter for myYCoordinate
+	 * @param theYCoordinate, the new value for myYCoordinate
+	 */
+	void setMyYCoordinate(int theYCoordinate) {
+		this.myYCoordinate = theYCoordinate;
+		this.notifyObservers();
+	}
+	
+	
+	/**
+	 * Setter for isAcessible
+	 * @param theAcessibility the new boolean value for isAcessible
+	 */
+	void setIsAcessible(boolean theAcessibility) {
+		this.isAcessible = theAcessibility;
+		this.notifyObservers();
+	}
+	
+	/**
+	 * Setter for isLocked
+	 * @param theLockedStatus the new boolean value for isLocked
+	 */
+	void setIsLocked(boolean theLockedStatus) {
+		this.isLocked = theLockedStatus;
 		this.notifyObservers();
 	}
 
-	void setIsAcessible(boolean isAcessible) {
-		this.isAcessible = isAcessible;
-		this.notifyObservers();
-	}
-
-	void setIsLocked(boolean isLocked) {
-		this.isLocked = isLocked;
-		this.notifyObservers();
-	}
-
-	void setIsKeyRoom(boolean containsKey) {
-		this.isKeyRoom = containsKey;
+	/**
+	 * Setter for isKeyRoom
+	 * @param theKeyStatus the new boolean value for isKeyRoom
+	 */
+	void setIsKeyRoom(boolean theKeyStatus) {
+		this.isKeyRoom = theKeyStatus;
 		this.notifyObservers();
 	}
 

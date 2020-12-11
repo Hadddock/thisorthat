@@ -67,7 +67,6 @@ public class Display implements Observer, KeyListener {
 		}
 	}
 
-	
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
@@ -162,7 +161,6 @@ public class Display implements Observer, KeyListener {
 				// set mouse listeners and preferred size
 				picLabels[i][j].setPreferredSize(prefSize);
 				setImageMouseListener(picLabels[i][j], name, rooms[i][j].getMyQuestion());
-				
 			}
 		}
 		
@@ -396,7 +394,7 @@ public class Display implements Observer, KeyListener {
 	}
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

@@ -66,6 +66,7 @@ public class Display implements Observer, KeyListener {
 			}
 		}
 	}
+
 	
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
@@ -215,13 +216,8 @@ public class Display implements Observer, KeyListener {
 		// Frame setup
 		myMazeFrame.add(menu, BorderLayout.SOUTH);
 		myMazeFrame.setPreferredSize(new Dimension(800,600));
-		myMazeFrame.pack();
-		myMazeFrame.setLocationRelativeTo(null);
-		myMazeFrame.setVisible(true);
+		prioritizeFrame(myMazeFrame);
 		myWindow.setVisible(true);
-		myMazeFrame.toFront();
-		myMazeFrame.requestFocus();
-		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 	}
 	
 	private void setImageMouseListener(JLabel theImage, final String theName, final Question theQuestion) {
@@ -278,12 +274,7 @@ public class Display implements Observer, KeyListener {
 		myQuestionFrame.add(answerMenu, BorderLayout.SOUTH);
 		myQuestionFrame.add(question, BorderLayout.CENTER);
 		myQuestionFrame.setPreferredSize(new Dimension(300, 200));
-		myQuestionFrame.pack();
-		myQuestionFrame.setVisible(true);
-		myQuestionFrame.setLocationRelativeTo(null);
-		myQuestionFrame.toFront();
-		myQuestionFrame.requestFocus();
-		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(myQuestionFrame);
 		while(unanswered) {
 			try {
 				Thread.sleep(1);
@@ -359,13 +350,8 @@ public class Display implements Observer, KeyListener {
 		myPauseFrame.add(menu, BorderLayout.SOUTH);
 		myPauseFrame.add(paused, BorderLayout.CENTER);
 		myPauseFrame.setPreferredSize(new Dimension(400, 100));
-		myPauseFrame.pack();
-		myPauseFrame.setLocationRelativeTo(null);
-		myPauseFrame.setVisible(true);
-		myPauseFrame.toFront();
-		myPauseFrame.requestFocus();
-		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
-		 pauseSelection = -1;
+		prioritizeFrame(myPauseFrame);
+		pauseSelection = -1;
 		while(pauseSelection == -1)	{
 			try {
 				myPauseFrame.requestFocus();
@@ -380,20 +366,14 @@ public class Display implements Observer, KeyListener {
 		return pauseSelection;
 		
 	}
-
+	
 	public void displayWinScreen() {
 		JFrame winFrame = new JFrame("A winner is you!");
 		JLabel winner = new JLabel("THE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH " + "PRIEST OF IKEA!",
 				SwingConstants.CENTER);
-
 		winFrame.add(winner);
 		winFrame.setPreferredSize(new Dimension(600, 100));
-		winFrame.pack();
-		winFrame.setLocationRelativeTo(null);
-		winFrame.setVisible(true);
-		winFrame.toFront();
-		winFrame.requestFocus();
-		winFrame.setDefaultCloseOperation(winFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(winFrame);
 	}
 
 	public void displayLoseScreen() {
@@ -401,17 +381,19 @@ public class Display implements Observer, KeyListener {
 		JLabel loser = new JLabel(
 				"THE WINDING CORRIDORS OF IKEA HAVE CLAIMED YOUR SOUL, YOU LOST!",
 				SwingConstants.CENTER);
-
 		loseFrame.add(loser);
 		loseFrame.setPreferredSize(new Dimension(600, 100));
-		loseFrame.pack();
-		loseFrame.setLocationRelativeTo(null);
-		loseFrame.setVisible(true);
-		loseFrame.toFront();
-		loseFrame.requestFocus();
-		loseFrame.setDefaultCloseOperation(loseFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(loseFrame);
 	}
 
+	private void prioritizeFrame(JFrame theFrame) {
+		theFrame.pack();
+		theFrame.setLocationRelativeTo(null);
+		theFrame.setVisible(true);
+		theFrame.toFront();
+		theFrame.requestFocus();
+		theFrame.setDefaultCloseOperation(0);
+	}
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub

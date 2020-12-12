@@ -28,15 +28,42 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("deprecation")
-public class Display implements Observer, KeyListener {
+public class Display implements KeyListener {
+	/*
+	 * Key Event code for up arrow key
+	 */
 	public static final int UP =  	38;
+	/*
+	 * Key Event code for right arrow key
+	 */
 	public static final int RIGHT = 39;
+	/*
+	 * Key Event code for down arrow key
+	 */
 	public static final int DOWN = 40;
+	/*
+	 * Key Event code for left arrow key
+	 */
 	public static final int LEFT = 37;
+	/*
+	 * Key Event code for escape key
+	 */
 	public static final int ESCAPE = 27;
+	/*
+	 * Key Event code for save key
+	 */
 	public static final int SAVE = 5;
+	/*
+	 * int to represent selecting Load option
+	 */
 	public static final int LOAD = 6;
+	/*
+	 * int to represent selecting Resume option
+	 */
 	public static final int RESUME = 7;
+	/*
+	 * int to represent selecting Exit option
+	 */
 	public static final int EXIT = 8;
 	private JWindow myWindow;
 	private JFrame myMazeFrame;
@@ -46,7 +73,7 @@ public class Display implements Observer, KeyListener {
 	private boolean correct;
 	private boolean unanswered = true;
 	int keyPressed;
-	private Observable observable;
+
 	
 	public Display(Maze theMaze) {
 		myMazeFrame = new JFrame("Maze");
@@ -57,14 +84,7 @@ public class Display implements Observer, KeyListener {
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
-		//observable
-		this.observable = theMaze;
-		observable.addObserver(this);
-		for (int i = 0; i < theMaze.getMyRooms().length; i++) {
-			for (int j = 0; j < theMaze.getMyRooms()[i].length; j++) {
-				theMaze.getMyRooms()[i][j].addObserver(this);
-			}
-		}
+
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -392,9 +412,5 @@ public class Display implements Observer, KeyListener {
 		theFrame.requestFocus();
 		theFrame.setDefaultCloseOperation(0);
 	}
-	@Override
-	public void update(Observable o, Object arg) {
-		
-		
-	}
+
 }

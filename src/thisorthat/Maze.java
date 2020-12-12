@@ -1,5 +1,4 @@
 package thisorthat;
-import java.util.Observable;
 import java.util.Set;
 import java.util.Stack;
 import java.io.Serializable;
@@ -7,20 +6,46 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
-public class Maze extends Observable implements Serializable {
+/**
+ * 
+ * Maze is an abstraction of a collection of rooms and the status of a player in
+ * the Maze for use in a Trivia maze program.
+ *
+ */
+public class Maze implements Serializable {
+	/*
+	 * 2-D array of rooms composing the Maze
+	 */
 	private Room[][] myRooms;// the maze composed of a 2-D array of rooms
-	private int myYPosition;// current y location of player in Room, [myYPosition][].
-	private int myXPosition;// current x location of player in Room, [][myXPosition].
-	private boolean hasKey; // does the player have a key in their possession
+	/*
+	 * the current Y location of the player in the Maze
+	 */
+	private int myYPosition;
+	/*
+	 * the current X location of the player in the Maze
+	 */
+	private int myXPosition;
+	/*
+	 * whether or not the player in the Maze currently has a key
+	 */
+	private boolean hasKey; 
 
+	/*
+	 * Constructor for a Maze
+	 * @param theRooms the 2-D array of rooms to compose the Maze
+	 * @param theYPosition the starting Y position of the player in the Maze
+	 * @param theXPosition the starting X position of the player in the Maze
+	 * @param theKeyStatus whether or not the player starts the Maze with a key
+	 */
 	public Maze(Room[][] theRooms, int theYPosition, int theXPosition, boolean theKeyStatus) {
 		this.myRooms = theRooms;
 		this.myYPosition = theYPosition;
 		this.myXPosition = theXPosition;
 		this.hasKey = theKeyStatus;
 	}
-	
+	/*
+	 * XXX constructor for Maze for use in tests
+	 */
 	public Maze() {
 		Room[][] testRooms = new Room[3][3];
 		// make Gullunge/basic question room
@@ -47,36 +72,58 @@ public class Maze extends Observable implements Serializable {
 		this.myXPosition = 1;
 	}
 
+	
+	/**
+	 * Getter for myYPosition
+	 * @return myYPosition
+	 */
 	public int getMyYPosition() {
 		return myYPosition;
 	}
-
+	/**
+	 * Getter for myXPosition
+	 * @return myXPosition
+	 */
 	public int getMyXPosition() {
 		return myXPosition;
 	}
-
+	/**
+	 * Setter for myYPosition
+	 */
 	public void setMyYPosition(int myYPosition) {
 		this.myYPosition = myYPosition;
-		notifyObservers();
-	}
 
+	}
+	/**
+	 * Setter for myXPosition
+	 */
 	public void setMyXPosition(int myXPosition) {
 		this.myXPosition = myXPosition;
-		notifyObservers();
-	}
 
+	}
+	/**
+	 * Getter for hasKey
+	 * @return hasKey
+	 */
 	public boolean getHasKey() {
 		return hasKey;
 	}
-	
-	public boolean checkInBounds(int y, int x) {
-		if (x >= 0 && x <= this.myRooms[0].length - 1 && y >= 0 && y <= this.myRooms.length - 1) {
+	/**
+	 * Check if there exists a room at the specified coordinates in the maze
+	 * @param theYPosition checked to see if it exists in the bounds of the maze
+	 * @param theXPosition checked to see if it exists in the bounds of the maze
+	 * @return whether or not there exists a room at the specified coordinates in the maze
+	 */
+	public boolean checkInBounds(int theYPosition, int theXPosition) {
+		if (theXPosition >= 0 && theXPosition <= this.myRooms[0].length - 1 && theYPosition >= 0 && theYPosition <= this.myRooms.length - 1) {
 			return true;
 		}
 		return false;
 	}
-	//TODO refactor repeated code for second while loop, needs to go through process again with locked rooms
-	//added in order to account for being able to reach the goal with the key
+	/**
+	 * Check if the current state of the Maze is potentially completable by the player
+	 * @return if the current state of the Maze is potentially completable by the player
+	 */
 	public boolean checkWinPossible() {
 		int x = myXPosition;
 		int y = myYPosition;
@@ -151,67 +198,91 @@ public class Maze extends Observable implements Serializable {
 		}
 		return false;
 	}
-	
+	/**
+	 * Check if if the player has completed the maze by reaching a goal room
+	 * @return if the player has completed the maze by reaching a goal room
+	 */
 	public boolean checkWinCondition() {
 		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
 	}
 
-	//XXX also sets x and y coordinates of each room. Workaround for rooms not knowing their position in 2-d array
-	public List<Room> getNeighbors(int y, int x) {
+	/**
+	 * Check if if the player has completed the maze by reaching a goal room
+	 * @param theYPosition the Y position of the room whose neighbors will be returned in a list
+	 * @param theXPosition the Y position of the room whose neighbors will be returned in a list
+	 * @return A List of rooms adjacent to the room at the specified coordinates
+	 */
+	public List<Room> getNeighbors(int theYPosition, int theXPosition) {
 		List<Room> returnValue = new LinkedList<Room>();
-		if(checkInBounds(y-1,x)) {
+		if(checkInBounds(theYPosition-1,theXPosition)) {
 			
-			this.myRooms[y-1][x].setMyYCoordinate(y-1);
-			this.myRooms[y-1][x].setMyXCoordinate(x);
-			returnValue.add(this.myRooms[y-1][x]);
+			this.myRooms[theYPosition-1][theXPosition].setMyYCoordinate(theYPosition-1);
+			this.myRooms[theYPosition-1][theXPosition].setMyXCoordinate(theXPosition);
+			returnValue.add(this.myRooms[theYPosition-1][theXPosition]);
 		}
-		if(checkInBounds(y,x+1)) {
+		if(checkInBounds(theYPosition,theXPosition+1)) {
 			
-			this.myRooms[y][x+1].setMyYCoordinate(y);
-			this.myRooms[y][x+1].setMyXCoordinate(x+1);
-			returnValue.add(this.myRooms[y][x+1]);
+			this.myRooms[theYPosition][theXPosition+1].setMyYCoordinate(theYPosition);
+			this.myRooms[theYPosition][theXPosition+1].setMyXCoordinate(theXPosition+1);
+			returnValue.add(this.myRooms[theYPosition][theXPosition+1]);
 		}
 		
-		if(checkInBounds(y+1,x)) {
-			this.myRooms[y+1][x].setMyYCoordinate(y+1);
-			this.myRooms[y+1][x].setMyXCoordinate(x);
-			returnValue.add(this.myRooms[y+1][x]);
+		if(checkInBounds(theYPosition+1,theXPosition)) {
+			this.myRooms[theYPosition+1][theXPosition].setMyYCoordinate(theYPosition+1);
+			this.myRooms[theYPosition+1][theXPosition].setMyXCoordinate(theXPosition);
+			returnValue.add(this.myRooms[theYPosition+1][theXPosition]);
 		}
 		
-		if(checkInBounds(y,x-1)) {
-			this.myRooms[y][x-1].setMyYCoordinate(y);
-			this.myRooms[y][x-1].setMyXCoordinate(x-1);
-			returnValue.add(this.myRooms[y][x-1]);
+		if(checkInBounds(theYPosition,theXPosition-1)) {
+			this.myRooms[theYPosition][theXPosition-1].setMyYCoordinate(theYPosition);
+			this.myRooms[theYPosition][theXPosition-1].setMyXCoordinate(theXPosition-1);
+			returnValue.add(this.myRooms[theYPosition][theXPosition-1]);
 		}
 		return returnValue;
 	}
 
 	/*
-	 * If player has obtained a key from a room, set hasKey to true and remove the
-	 * key from the room.
+	 * Checks if the player is currently in a room containing a key, and if so removes the key from
+	 * the room and gives it to the player
 	 */
 	public void obtainKey() {
 		// if giving player key and current room contains a key
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
 			this.hasKey = true;
-			notifyObservers();
+			
 		}
 	}
-	
+	/*
+	 * Checks if the player is attempting to access a locked room, and if so removes the key from the player
+	 * and unlocks the room, making it accessible
+	 */
 	public void useKey() {
 		if (this.myRooms[myYPosition][myXPosition].getIsLocked()) {
 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
 			this.hasKey = false;
-			notifyObservers();
+			
 		}
 	}
-
+	/*
+	 * Setter for hasKey
+	 * @param the new boolean value assigned to hasKey
+	 */
+	public void setHasKey(boolean theKeyStatus) {
+		this.hasKey = theKeyStatus;
+		
+	}
+	/*
+	 * Getter for myRooms
+	 * @return myRooms
+	 */
 	public Room[][] getMyRooms() {
 		return myRooms;
 	}
-
+	/*
+	 * XXX toString method for this Maze for use in temporary CLI
+	 */
 	public String toString() {
 		StringBuilder returnValue = new StringBuilder();
 		Room currentRoom;
@@ -248,9 +319,6 @@ public class Maze extends Observable implements Serializable {
 
 	}
 
-	public void setHasKey(boolean b) {
-		this.hasKey = b;
-		notifyObservers();
-	}
+	
 
 }

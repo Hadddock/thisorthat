@@ -6,26 +6,71 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
-
+/*
+ * Game is trivia maze program where players navigate to the exit of a maze
+ * by successfully answering trivia questions.
+ */
 public class Game {
+
+	/*
+	 * Key Event code for up arrow key
+	 */
 	public static final int UP =  	38;
+	/*
+	 * Key Event code for right arrow key
+	 */
 	public static final int RIGHT = 39;
+	/*
+	 * Key Event code for down arrow key
+	 */
 	public static final int DOWN = 40;
+	/*
+	 * Key Event code for left arrow key
+	 */
 	public static final int LEFT = 37;
+	/*
+	 * Key Event code for escape key
+	 */
 	public static final int ESCAPE = 27;
+	/*
+	 * Key Event code for save key
+	 */
 	public static final int SAVE = 5;
+	/*
+	 * int to represent selecting Load option
+	 */
 	public static final int LOAD = 6;
+	/*
+	 * int to represent selecting Resume option
+	 */
 	public static final int RESUME = 7;
+	/*
+	 * int to represent selecting Exit option
+	 */
 	public static final int EXIT = 8;
+	/*
+	 * The Maze the user will navigate through
+	 */
 	private Maze myMaze;
+	/*
+	 * The Display that will display and receive input from the user
+	 */
 	private Display myDisplay;
 	private boolean isFinished = false;
-
+	/*
+	 * Constructor for a Game
+	 * @param theMaze theMaze to be used when
+	 */
 	public Game(Maze theMaze) {
 		this.myMaze = theMaze;
 		this.myDisplay = new Display(this.myMaze);
 	}
-	
+
+	/*
+	 * Main loop for running the game. Gets selected action from user, verifies the
+	 * action and calls appropriate method, and repeats until goal is reached or
+	 * inaccessible.
+	 */
 	private void playGame() throws IOException  {
 		int selectedAction;
 		int pauseSelection;
@@ -68,12 +113,17 @@ public class Game {
 		}
 		
 	}
-	
-	private void verifyAction(int selectedDirection) {
+	/*
+	 * Verifies if the action the user is attempting to make matches the options available to the user,
+	 * and calls the appropriate method of the action is valid.
+	 * @param theSelectedDirection the direction relative to the player's current coordinates the
+	 * player is attempting to move to
+	 */
+	private void verifyAction(int theSelectedDirection) {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
-		switch (selectedDirection) {
+		switch (theSelectedDirection) {
 		case UP:
 			dy--;
 			break;
@@ -93,13 +143,20 @@ public class Game {
 			performAction(dy, dx);
 		}
 	}
-
-	private void performAction(int dy, int dx) {
-		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() + dy][this.myMaze.getMyXPosition()
-				+ dx];
+	/*
+	 * Handle the player attempting to access a room, calling the appropriate method based on the player's key status
+	 * and the fields of the room the player is attempting to access
+	 * @param theDY the difference in Y position from the player's current Y Position in the maze to the room they are
+	 * attempting to access
+	 * @param theDX the difference in X position from the player's current X Position in the maze to the room they are
+	 * attempting to access
+	 */
+	private void performAction(int theDY, int theDX) {
+		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() + theDY][this.myMaze.getMyXPosition()
+				+ theDX];
 		boolean moveRooms = false;
 
-		//if room is freely acessible, move there
+		//if room is freely accessible, move there
 		if (attemptedRoom.getIsAcessible()) {
 			moveRooms = true;
 			if (attemptedRoom.getIsGoal())
@@ -118,8 +175,8 @@ public class Game {
 		}
 
 		if (moveRooms) {
-			this.myMaze.setMyYPosition(this.myMaze.getMyYPosition() + dy);
-			this.myMaze.setMyXPosition(this.myMaze.getMyXPosition() + dx);
+			this.myMaze.setMyYPosition(this.myMaze.getMyYPosition() + theDY);
+			this.myMaze.setMyXPosition(this.myMaze.getMyXPosition() + theDX);
 			this.myMaze.useKey();
 			this.myMaze.obtainKey();
 		}
@@ -142,7 +199,7 @@ public class Game {
 	}
 	
 	/*
-	 * Saves the Game state to file triviaMaze.ser
+	 * Saves the Game state to triviaMaze.ser
 	 */
 	private void saveGame() {
 		try {
@@ -160,7 +217,7 @@ public class Game {
 	}
 	
 	/*
-	 * Loads the Game state to from triviaMaze.ser
+	 * Loads the Game state saved in triviaMaze.ser
 	 */
 	private void loadGame() {
 		Maze m = null;
@@ -180,6 +237,7 @@ public class Game {
 		}
 	}
 
+	
 	//TODO Exit Game needs to be a window in GUI, not use the console
 	private void exitGame() {
 		Scanner console = new Scanner(System.in);
@@ -196,7 +254,9 @@ public class Game {
 		}
 	}
 
-	// For testing purposes only, not to be part of game
+	/*
+	 * Entry point to the Game, initializes a game and calls playGame()
+	 */
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze());

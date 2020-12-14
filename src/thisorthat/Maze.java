@@ -125,77 +125,58 @@ public class Maze implements Serializable {
 	 * @return if the current state of the Maze is potentially completable by the player
 	 */
 	public boolean checkWinPossible() {
-		int x = myXPosition;
-		int y = myYPosition;
-		Room current = this.myRooms[y][x];
-		//check most common unsolvable condition, surrounded by locked or null rooms without a key
-		if(!this.hasKey 
-				&& (!checkInBounds(y+1,x) || this.myRooms[y+1][x].getIsLocked())
-				&& (!checkInBounds(y-1,x) || this.myRooms[y-1][x].getIsLocked())
-				&& (!checkInBounds(y,x+1) || this.myRooms[y][x+1].getIsLocked())
-				&& (!checkInBounds(y,x-1) || this.myRooms[y][x-1].getIsLocked())) {
-			return false;
-		}
-		//begin depth first search on key
+
+		Room currentRoom = this.myRooms[myYPosition][myXPosition];
+		currentRoom.setMyXCoordinate(myXPosition);
+		currentRoom.setMyYCoordinate(myYPosition);
+
+		// begin depth first search on key
 		boolean potentialKey = this.hasKey;
-		Set<Room> set = new HashSet<Room>();
+		Set<Room> processedRooms = new HashSet<Room>();
 		Set<Room> lockedNeighbors = new HashSet<Room>();
-		Stack<Room> stack = new Stack<Room>();
-		stack.add(current);
+		Stack<Room> roomsToBeProcessed = new Stack<Room>();
 		
-		while(!stack.isEmpty()) {
-			Room element = stack.pop();
-			x = element.getMyXCoordinate();
-			y = element.getMyYCoordinate();
-			if (element.getIsKeyRoom()){
-				potentialKey = true;
-			}
-			if(!set.contains(element)) {
-				set.add(element);
+		int currentXPosition;
+		int currentYPosition;
+		roomsToBeProcessed.add(currentRoom);
+		
+		do {
+			while (!roomsToBeProcessed.isEmpty() ) {
+				currentRoom = roomsToBeProcessed.pop();
+				currentXPosition = currentRoom.getMyXCoordinate();
+				currentYPosition = currentRoom.getMyYCoordinate();
+				if (currentRoom.getIsGoal()) {
+					return true;
+				}
 				
-			}
-			if(element.getIsGoal()) {
-				return true;
-			}
-			List<Room> neighbors = getNeighbors(y,x);
-			for(int i = 0; i < neighbors.size(); i++) {
-				Room n = neighbors.get(i);
-				if(!n.getIsLocked()) {
-					if(!set.contains(n) && !stack.contains(n)) {
-						stack.add(n);
+				if (currentRoom.getIsKeyRoom()) {
+					potentialKey = true;
+				}
+				processedRooms.add(currentRoom);
+				
+				List<Room> neighbors = getNeighbors(currentYPosition, currentXPosition);
+				for (int i = 0; i < neighbors.size(); i++) {
+					Room n = neighbors.get(i);
+					if (!n.getIsLocked()) {
+						if (!processedRooms.contains(n) && !roomsToBeProcessed.contains(n)) {
+							roomsToBeProcessed.add(n);
+						}
+					}
+
+					else if (!lockedNeighbors.contains(n)) {
+						lockedNeighbors.add(n);
 					}
 				}
-				
-				else if (!lockedNeighbors.contains(n)) {
-						lockedNeighbors.add(n);
+			}
+			// if a key is in posession or is acessible,
+			if (potentialKey) {
+				for (Room lockedRoom : lockedNeighbors) {
+					roomsToBeProcessed.add(lockedRoom);
 				}
+				potentialKey = false;
 			}
-		}
-		//if a key is in posession or is acessible,
-		if(potentialKey) {
-			for(Room lockedRoom: lockedNeighbors) {
-				stack.add(lockedRoom);
-			}
-		}
+		} while (potentialKey || !roomsToBeProcessed.isEmpty());
 		//second time around assuming key has been used somewhere
-		while(!stack.isEmpty()) {
-			Room element = stack.pop();
-			x = element.getMyXCoordinate();
-			y = element.getMyYCoordinate();
-			if(!set.contains(element)) {
-				set.add(element);
-			}
-			if(element.getIsGoal()) {
-				return true;
-			}
-			List<Room> neighbors = getNeighbors(y,x);
-			for(int i = 0; i < neighbors.size(); i++) {
-				Room n = neighbors.get(i);
-				if(!n.getIsLocked() && !set.contains(n) && !stack.contains(n)) {
-						set.add(n);
-				}
-			}
-		}
 		return false;
 	}
 	/**

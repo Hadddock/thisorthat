@@ -80,6 +80,8 @@ Scanner scan = new Scanner(System.in);
 	void tearDown() throws Exception {
 		//TODO fix this
 	}
+	
+	
 
 //MODEL TESTS-----------------------------------------------------------------------------------MODEL TESTS	
 	@Test

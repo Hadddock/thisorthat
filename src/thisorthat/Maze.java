@@ -231,7 +231,6 @@ public class Maze implements Serializable {
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
 			this.hasKey = true;
-			
 		}
 	}
 	/*

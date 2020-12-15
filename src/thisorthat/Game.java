@@ -98,10 +98,14 @@ public class Game {
 				this.verifyAction(selectedAction);
 				//check if game is over, either by reaching goal or locking off path to goal
 				this.isFinished = this.myMaze.checkWinCondition();
-				this.isFinished = !this.myMaze.checkWinPossible();
+				if(!this.isFinished) {
+					this.isFinished = !this.myMaze.checkWinPossible();
+				}
+				
 			}
 			
 		}
+		myDisplay.showMaze(this.myMaze);
 		//if at goal, display win screen
 		if(this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal()) {
 			this.myDisplay.displayWinScreen();
@@ -203,7 +207,6 @@ public class Game {
 	 */
 	private void saveGame() {
 		try {
-			
 			FileOutputStream fileOut = new FileOutputStream("./triviaMaze.ser");
 
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);

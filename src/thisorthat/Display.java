@@ -28,32 +28,65 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("deprecation")
-public class Display implements Observer, KeyListener {
-	private static final int UP =  	38;
-	private static final int RIGHT = 39;
-	private static final int DOWN = 40;
-	private static final int LEFT = 37;
-	private static final int ESCAPE = 27;
+public class Display implements KeyListener{
+	/*
+	 * Key Event code for up arrow key
+	 */
+	public static final int UP =  	38;
+	/*
+	 * Key Event code for right arrow key
+	 */
+	public static final int RIGHT = 39;
+	/*
+	 * Key Event code for down arrow key
+	 */
+	public static final int DOWN = 40;
+	/*
+	 * Key Event code for left arrow key
+	 */
+	public static final int LEFT = 37;
+	/*
+	 * Key Event code for escape key
+	 */
+	public static final int ESCAPE = 27;
+	/*
+	 * Key Event code for save key
+	 */
+	public static final int SAVE = 5;
+	/*
+	 * int to represent selecting Load option
+	 */
+	public static final int LOAD = 6;
+	/*
+	 * int to represent selecting Resume option
+	 */
+	public static final int RESUME = 7;
+	/*
+	 * int to represent selecting Exit option
+	 */
+	public static final int EXIT = 8;
 	private JWindow myWindow;
-	public JFrame myMazeFrame;
+	private JFrame myMazeFrame;
 	private JFrame myQuestionFrame;
 	private JFrame myPauseFrame;
+	private int pauseSelection = 0;
 	private boolean correct;
 	private boolean unanswered = true;
 	int keyPressed;
-	private Game myGame;
+
 	
-	public Display() {
+	public Display(Maze theMaze) {
 		myMazeFrame = new JFrame("Maze");
 		myMazeFrame.addKeyListener(this);
 		myMazeFrame.setVisible(true);
 		myMazeFrame.toFront();
-		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
+		myMazeFrame.setDefaultCloseOperation(myMazeFrame.EXIT_ON_CLOSE);
 		myQuestionFrame = new JFrame("Question");
 		myPauseFrame = new JFrame("Pause");
 		myWindow = new JWindow(myMazeFrame);
+
 	}
-	
+
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
@@ -67,17 +100,13 @@ public class Display implements Observer, KeyListener {
 		myMazeFrame.requestFocus();
 		
 		this.keyPressed = -1;
-		int selectedDirection = -1;
-		while(selectedDirection != LEFT && selectedDirection !=RIGHT && selectedDirection!= UP && selectedDirection!= DOWN ) {
+		int selectedAction = -1;
+		while(selectedAction != LEFT && selectedAction !=RIGHT && selectedAction!= UP && selectedAction!= DOWN && selectedAction != ESCAPE ) {
 			this.myMazeFrame.isAutoRequestFocus();
-			selectedDirection = this.keyPressed;
+			selectedAction = this.keyPressed;
 			//go to pause menu
-			if(selectedDirection == ESCAPE) {
-				showPauseMenu();
-				this.keyPressed = -1;
-			}
-		}
-		return selectedDirection;	
+		}	
+		return selectedAction;	
 	}
 
 	public void showMaze(final Maze theMaze) throws IOException {
@@ -94,6 +123,7 @@ public class Display implements Observer, KeyListener {
 			public void actionPerformed(final ActionEvent theEvent) {
 				showPauseMenu();
 			}
+			
 		});
 		menu.add(pause);
 		
@@ -151,7 +181,6 @@ public class Display implements Observer, KeyListener {
 				// set mouse listeners and preferred size
 				picLabels[i][j].setPreferredSize(prefSize);
 				setImageMouseListener(picLabels[i][j], name, rooms[i][j].getMyQuestion());
-				
 			}
 		}
 		
@@ -205,13 +234,8 @@ public class Display implements Observer, KeyListener {
 		// Frame setup
 		myMazeFrame.add(menu, BorderLayout.SOUTH);
 		myMazeFrame.setPreferredSize(new Dimension(800,600));
-		myMazeFrame.pack();
-		myMazeFrame.setLocationRelativeTo(null);
-		myMazeFrame.setVisible(true);
+		prioritizeFrame(myMazeFrame);
 		myWindow.setVisible(true);
-		myMazeFrame.toFront();
-		myMazeFrame.requestFocus();
-		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 	}
 	
 	private void setImageMouseListener(JLabel theImage, final String theName, final Question theQuestion) {
@@ -268,12 +292,7 @@ public class Display implements Observer, KeyListener {
 		myQuestionFrame.add(answerMenu, BorderLayout.SOUTH);
 		myQuestionFrame.add(question, BorderLayout.CENTER);
 		myQuestionFrame.setPreferredSize(new Dimension(300, 200));
-		myQuestionFrame.pack();
-		myQuestionFrame.setVisible(true);
-		myQuestionFrame.setLocationRelativeTo(null);
-		myQuestionFrame.toFront();
-		myQuestionFrame.requestFocus();
-		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(myQuestionFrame);
 		while(unanswered) {
 			try {
 				Thread.sleep(1);
@@ -287,7 +306,7 @@ public class Display implements Observer, KeyListener {
 		
 	}
 
-	public void showPauseMenu(){
+	public int showPauseMenu(){
 		JLabel paused = new JLabel("The game is paused.", SwingConstants.CENTER);
 		// create resume button and its action listener
 		JButton resume = new JButton();
@@ -297,8 +316,6 @@ public class Display implements Observer, KeyListener {
 		save.setPreferredSize(prefButtonSize);
 		JButton load = new JButton("Load");
 		load.setPreferredSize(prefButtonSize);
-		
-		
 		try {
 			BufferedImage img = ImageIO.read(new File("./images/resume.png"));
 			resume.setIcon(new ImageIcon(img));
@@ -313,6 +330,7 @@ public class Display implements Observer, KeyListener {
 		resume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
+				pauseSelection = RESUME;
 				myPauseFrame.dispose();
 			}
 		});
@@ -323,8 +341,10 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
-				myGame.saveGame();
+				pauseSelection = SAVE;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game saved!");
+				;
 			}
 		});
 		
@@ -334,7 +354,8 @@ public class Display implements Observer, KeyListener {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				// REPLACE WITH ACTUAL LOAD ACTION WHEN I HAVE IT
-				myGame.loadGame();
+				pauseSelection = LOAD;
+				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game loaded!");
 			}
 		});
@@ -347,27 +368,31 @@ public class Display implements Observer, KeyListener {
 		myPauseFrame.add(menu, BorderLayout.SOUTH);
 		myPauseFrame.add(paused, BorderLayout.CENTER);
 		myPauseFrame.setPreferredSize(new Dimension(400, 100));
-		myPauseFrame.pack();
-		myPauseFrame.setLocationRelativeTo(null);
-		myPauseFrame.setVisible(true);
-		myPauseFrame.toFront();
-		myPauseFrame.requestFocus();
-		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(myPauseFrame);
+		pauseSelection = -1;
+		while(pauseSelection == -1)	{
+			try {
+				myPauseFrame.requestFocus();
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.myMazeFrame.isAutoRequestFocus();
+		}
+		myMazeFrame.requestFocus();
+		return pauseSelection;
+		
 	}
-
+	
 	public void displayWinScreen() {
 		JFrame winFrame = new JFrame("A winner is you!");
 		JLabel winner = new JLabel("THE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH " + "PRIEST OF IKEA!",
 				SwingConstants.CENTER);
-
 		winFrame.add(winner);
 		winFrame.setPreferredSize(new Dimension(600, 100));
-		winFrame.pack();
-		winFrame.setLocationRelativeTo(null);
-		winFrame.setVisible(true);
-		winFrame.toFront();
-		winFrame.requestFocus();
-		winFrame.setDefaultCloseOperation(winFrame.DISPOSE_ON_CLOSE);
+		prioritizeFrame(winFrame);
+		myMazeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	public void displayLoseScreen() {
@@ -375,24 +400,19 @@ public class Display implements Observer, KeyListener {
 		JLabel loser = new JLabel(
 				"THE WINDING CORRIDORS OF IKEA HAVE CLAIMED YOUR SOUL, YOU LOST!",
 				SwingConstants.CENTER);
-
 		loseFrame.add(loser);
 		loseFrame.setPreferredSize(new Dimension(600, 100));
-		loseFrame.pack();
-		loseFrame.setLocationRelativeTo(null);
-		loseFrame.setVisible(true);
-		loseFrame.toFront();
-		loseFrame.requestFocus();
-		loseFrame.setDefaultCloseOperation(loseFrame.DISPOSE_ON_CLOSE);
-	}
-	
-	public void getGame(Game theGame) {
-		myGame = theGame;
+		prioritizeFrame(loseFrame);
+		myMazeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+	private void prioritizeFrame(JFrame theFrame) {
+		theFrame.pack();
+		theFrame.setLocationRelativeTo(null);
+		theFrame.setVisible(true);
+		theFrame.toFront();
+		theFrame.requestFocus();
+		theFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
+
 }

@@ -84,9 +84,7 @@ public class Room implements java.io.Serializable {
 
 	int getMyXCoordinate() {
 		return myXCoordinate;
-	}
-	
-	
+	}	
 
 	void setMyXCoordinate(int myXCoordinate) {
 		this.myXCoordinate = myXCoordinate;

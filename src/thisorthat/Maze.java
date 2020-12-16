@@ -77,27 +77,27 @@ public class Maze implements Serializable {
 	 * Getter for myYPosition
 	 * @return myYPosition
 	 */
-	public int getMyYPosition() {
+	int getMyYPosition() {
 		return myYPosition;
 	}
 	/**
 	 * Getter for myXPosition
 	 * @return myXPosition
 	 */
-	public int getMyXPosition() {
+	int getMyXPosition() {
 		return myXPosition;
 	}
 	/**
 	 * Setter for myYPosition
 	 */
-	public void setMyYPosition(int myYPosition) {
+	void setMyYPosition(int myYPosition) {
 		this.myYPosition = myYPosition;
 
 	}
 	/**
 	 * Setter for myXPosition
 	 */
-	public void setMyXPosition(int myXPosition) {
+	void setMyXPosition(int myXPosition) {
 		this.myXPosition = myXPosition;
 
 	}
@@ -105,7 +105,7 @@ public class Maze implements Serializable {
 	 * Getter for hasKey
 	 * @return hasKey
 	 */
-	public boolean getHasKey() {
+	boolean getHasKey() {
 		return hasKey;
 	}
 	/**
@@ -114,7 +114,7 @@ public class Maze implements Serializable {
 	 * @param theXPosition checked to see if it exists in the bounds of the maze
 	 * @return whether or not there exists a room at the specified coordinates in the maze
 	 */
-	public boolean checkInBounds(int theYPosition, int theXPosition) {
+	boolean checkInBounds(int theYPosition, int theXPosition) {
 		if (theXPosition >= 0 && theXPosition <= this.myRooms[0].length - 1 && theYPosition >= 0 && theYPosition <= this.myRooms.length - 1) {
 			return true;
 		}
@@ -124,7 +124,7 @@ public class Maze implements Serializable {
 	 * Check if the current state of the Maze is potentially completable by the player
 	 * @return if the current state of the Maze is potentially completable by the player
 	 */
-	public boolean checkWinPossible() {
+	boolean checkWinPossible() {
 
 		Room currentRoom = this.myRooms[myYPosition][myXPosition];
 		currentRoom.setMyXCoordinate(myXPosition);
@@ -183,7 +183,7 @@ public class Maze implements Serializable {
 	 * Check if if the player has completed the maze by reaching a goal room
 	 * @return if the player has completed the maze by reaching a goal room
 	 */
-	public boolean checkWinCondition() {
+	boolean checkWinCondition() {
 		return this.myRooms[this.myYPosition][this.myXPosition].getIsGoal();
 	}
 
@@ -193,7 +193,7 @@ public class Maze implements Serializable {
 	 * @param theXPosition the Y position of the room whose neighbors will be returned in a list
 	 * @return A List of rooms adjacent to the room at the specified coordinates
 	 */
-	public List<Room> getNeighbors(int theYPosition, int theXPosition) {
+	List<Room> getNeighbors(int theYPosition, int theXPosition) {
 		List<Room> returnValue = new LinkedList<Room>();
 		if(checkInBounds(theYPosition-1,theXPosition)) {
 			
@@ -226,7 +226,7 @@ public class Maze implements Serializable {
 	 * Checks if the player is currently in a room containing a key, and if so removes the key from
 	 * the room and gives it to the player
 	 */
-	public void obtainKey() {
+	void obtainKey() {
 		// if giving player key and current room contains a key
 		if (this.myRooms[myYPosition][myXPosition].getIsKeyRoom()) {
 			this.myRooms[myYPosition][myXPosition].setIsKeyRoom(false);
@@ -237,7 +237,7 @@ public class Maze implements Serializable {
 	 * Checks if the player is attempting to access a locked room, and if so removes the key from the player
 	 * and unlocks the room, making it accessible
 	 */
-	public void useKey() {
+	void useKey() {
 		if (this.myRooms[myYPosition][myXPosition].getIsLocked()) {
 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
@@ -249,7 +249,7 @@ public class Maze implements Serializable {
 	 * Setter for hasKey
 	 * @param the new boolean value assigned to hasKey
 	 */
-	public void setHasKey(boolean theKeyStatus) {
+	void setHasKey(boolean theKeyStatus) {
 		this.hasKey = theKeyStatus;
 		
 	}
@@ -257,11 +257,11 @@ public class Maze implements Serializable {
 	 * Getter for myRooms
 	 * @return myRooms
 	 */
-	public Room[][] getMyRooms() {
+	Room[][] getMyRooms() {
 		return myRooms;
 	}
 	/*
-	 * XXX toString method for this Maze for use in temporary CLI
+	 * toString method for this Maze for use in debugging
 	 */
 	public String toString() {
 		StringBuilder returnValue = new StringBuilder();

@@ -8,13 +8,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.sqlite.SQLiteDataSource;
 
 public class Database {
 	
-	public static void main(String[] args) {
+	private Map<String, List<String>> myDatabase = new HashMap<>();
+//	private List<String> myInfo = new ArrayList<>();
+	
+	public Database() {
 		SQLiteDataSource data = null;
 		
 		final List<List<String>> questions = new ArrayList<>();
@@ -83,10 +88,14 @@ public class Database {
 				String answer1 = rs.getString("ANSWER_0");
 				String answer2 = rs.getString("ANSWER_1");
 				String correctAnswerIndex = rs.getString("CORRECT_ANSWER_INDEX");
-				System.out.println( "Result: Topic = " + topic + ", Prompt =" + prompt +
-	                    ", Answer_0 = " + answer1 +
-	                    ", Answer_1 = " + answer2 +
-	                    ", Correct_Answer_Index = " + correctAnswerIndex);
+				if (!myDatabase.containsKey(prompt)) {
+					List<String> info = new ArrayList<>();
+					info.add(topic);
+					info.add(answer1);
+					info.add(answer2);
+					info.add(correctAnswerIndex);
+					myDatabase.put(prompt, info);
+				}
 			}
 			
 		} catch (SQLException e) {
@@ -94,5 +103,10 @@ public class Database {
 			System.exit(0);
 		}
 	}
-
+	/*
+	 * 
+	 */
+	Map<String, List<String>> getDatabase() {
+		return this.myDatabase;
+	}
 }

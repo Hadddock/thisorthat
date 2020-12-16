@@ -255,17 +255,19 @@ public class Display implements KeyListener{
 		JLabel question = new JLabel(theQuestion.getMySubject(), SwingConstants.CENTER);
 		// answerOne button and listener
 		JButton answerOne = new JButton(theQuestion.getMyAnswers()[0]);
+		answerOne.repaint();
 		answerOne.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 				if(theQuestion.getMyCorrectAnswer() == 0) {
 					JOptionPane.showMessageDialog(null, "Correct!");
 					correct = true;
-					
 				} else {
 					JOptionPane.showMessageDialog(null, "Incorrect!");
 					correct = false;
 				}
+				question.setVisible(false);
+				question.repaint();
 				myQuestionFrame.dispose();
 				unanswered = false;
 			}
@@ -282,6 +284,8 @@ public class Display implements KeyListener{
 					JOptionPane.showMessageDialog(null, "Incorrect!");
 					correct = false;
 				}
+				question.setVisible(false);
+				question.repaint();
 				myQuestionFrame.dispose();
 				unanswered = false;
 			}
@@ -289,6 +293,7 @@ public class Display implements KeyListener{
 		JPanel answerMenu = new JPanel();
 		answerMenu.add(answerOne);
 		answerMenu.add(answerTwo);
+		answerMenu.repaint();
 		myQuestionFrame.add(answerMenu, BorderLayout.SOUTH);
 		myQuestionFrame.add(question, BorderLayout.CENTER);
 		myQuestionFrame.setPreferredSize(new Dimension(300, 200));
@@ -301,6 +306,8 @@ public class Display implements KeyListener{
 				e.printStackTrace();
 			}
 		}
+		question.setVisible(false);
+		question.repaint();
 		unanswered = true;
 		return correct;
 		

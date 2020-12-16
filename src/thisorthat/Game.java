@@ -63,7 +63,12 @@ public class Game {
 	 */
 	public Game(Maze theMaze) {
 		this.myMaze = theMaze;
-		this.myDisplay = new Display(this.myMaze);
+		try {
+			this.myDisplay = new Display(this.myMaze);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -84,7 +89,6 @@ public class Game {
 			//get action from GUI
 			selectedAction = myDisplay.acceptMazeInput();
 			//check if the action is valid, if so perform
-			
 			//if pausing, perform selected pause function
 			if(selectedAction == ESCAPE) {
 				pauseSelection = myDisplay.showPauseMenu();
@@ -98,7 +102,9 @@ public class Game {
 				this.verifyAction(selectedAction);
 				//check if game is over, either by reaching goal or locking off path to goal
 				this.isFinished = this.myMaze.checkWinCondition();
-				this.isFinished = !this.myMaze.checkWinPossible();
+				if(!this.isFinished) {
+					this.isFinished = !this.myMaze.checkWinPossible();
+				}
 			}
 			
 		}
@@ -195,6 +201,8 @@ public class Game {
 			break;
 		case RESUME:
 			break;
+		case EXIT:
+			break;
 		}
 	}
 	
@@ -228,6 +236,7 @@ public class Game {
 			this.myMaze = m;
 			in.close();
 			fileIn.close();
+			this.playGame();
 		} catch (IOException i) {
 			i.printStackTrace();
 			return;
@@ -260,7 +269,6 @@ public class Game {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze());
-		testGame.myDisplay.displayWinScreen();
 		testGame.playGame();
 
 	}

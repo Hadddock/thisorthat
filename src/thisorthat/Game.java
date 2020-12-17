@@ -5,70 +5,72 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-/*
+/**
  * Game is trivia maze program where players navigate to the exit of a maze
  * by successfully answering trivia questions.
  */
-public class Game implements Serializable {
+public class Game {
 
 	/**
-	 * Generated serializable ID.
-	 */
-	private static final long serialVersionUID = -3402963501096468856L;
-	/*
 	 * Key Event code for up arrow key
 	 */
 	public static final int UP =  	38;
-	/*
+	/**
 	 * Key Event code for right arrow key
 	 */
 	public static final int RIGHT = 39;
-	/*
+	/**
 	 * Key Event code for down arrow key
 	 */
 	public static final int DOWN = 40;
-	/*
+	/**
 	 * Key Event code for left arrow key
 	 */
 	public static final int LEFT = 37;
-	/*
+	/**
 	 * Key Event code for escape key
 	 */
 	public static final int ESCAPE = 27;
-	/*
+	/**
 	 * Key Event code for save key
 	 */
 	public static final int SAVE = 5;
-	/*
+	/**
 	 * int to represent selecting Load option
 	 */
 	public static final int LOAD = 6;
-	/*
+	/**
 	 * int to represent selecting Resume option
 	 */
 	public static final int RESUME = 7;
-	/*
+	/**
 	 * int to represent selecting Exit option
 	 */
 	public static final int EXIT = 8;
-	/*
+	/**
 	 * The Maze the user will navigate through
 	 */
 	private Maze myMaze;
-	/*
+	/**
 	 * The Display that will display and receive input from the user
 	 */
 	private Display myDisplay;
+	/**
+	 * The boolean that checks if the game is finished
+	 */
 	private boolean isFinished = false;
-	
 	/**
 	 * Constructor for a Game
 	 * @param theMaze theMaze to be used when
 	 */
 	public Game(Maze theMaze) {
 		this.myMaze = theMaze;
-		this.myDisplay = new Display(this.myMaze);
+		try {
+			this.myDisplay = new Display(this.myMaze);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -89,7 +91,6 @@ public class Game implements Serializable {
 			//get action from GUI
 			selectedAction = myDisplay.acceptMazeInput();
 			//check if the action is valid, if so perform
-			
 			//if pausing, perform selected pause function
 			if(selectedAction == ESCAPE) {
 				pauseSelection = myDisplay.showPauseMenu();
@@ -103,29 +104,29 @@ public class Game implements Serializable {
 				this.verifyAction(selectedAction);
 				//check if game is over, either by reaching goal or locking off path to goal
 				this.isFinished = this.myMaze.checkWinCondition();
-				if (!isFinished) {
+				if(!this.isFinished) {
 					this.isFinished = !this.myMaze.checkWinPossible();
 				}
-			}
-			
+			}	
 		}
+		myDisplay.showMaze(this.myMaze);
 		//if at goal, display win screen
 		if(this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal()) {
+			this.myDisplay.displayWinScreen();
 			System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA"); 
 		}
 		//display winScreen
 		else {
 			this.myDisplay.displayLoseScreen();
 		}
-		
 	}
-	
 	/**
 	 * Verifies if the action the user is attempting to make matches the options available to the user,
 	 * and calls the appropriate method of the action is valid.
 	 * @param theSelectedDirection the direction relative to the player's current coordinates the
 	 * player is attempting to move to
 	 */
+
 	void verifyAction(int theSelectedDirection) {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
@@ -143,6 +144,8 @@ public class Game implements Serializable {
 		case LEFT:
 			dx--;
 			break;
+		case ESCAPE:
+			
 		}
 		// performAction if InBounds
 		if (x + dx >= 0 && x + dx <= this.myMaze.getMyRooms()[0].length - 1 && y + dy >= 0
@@ -150,7 +153,7 @@ public class Game implements Serializable {
 			performAction(dy, dx);
 		}
 	}
-	
+
 	/**
 	 * Handle the player attempting to access a room, calling the appropriate method based on the player's key status
 	 * and the fields of the room the player is attempting to access
@@ -159,7 +162,7 @@ public class Game implements Serializable {
 	 * @param theDX the difference in X position from the player's current X Position in the maze to the room they are
 	 * attempting to access
 	 */
-	private void performAction(int theDY, int theDX) {
+	void performAction(int theDY, int theDX) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() + theDY][this.myMaze.getMyXPosition()
 				+ theDX];
 		boolean moveRooms = false;
@@ -167,10 +170,8 @@ public class Game implements Serializable {
 		//if room is freely accessible, move there
 		if (attemptedRoom.getIsAcessible()) {
 			moveRooms = true;
-			if (attemptedRoom.getIsGoal()) {
+			if (attemptedRoom.getIsGoal())
 				this.isFinished = true;
-				myDisplay.displayWinScreen();
-			}
 		}
 		// if attempting to move to locked room, only go into room if you have the key
 		else if (attemptedRoom.getIsLocked()) {
@@ -179,8 +180,6 @@ public class Game implements Serializable {
 		// if moving to question room, prompt the question for that room
 		else if (!attemptedRoom.getIsAcessible()) {
 			boolean correct = myDisplay.showQuestion(attemptedRoom.getMyQuestion());
-			System.out.println(attemptedRoom.getMyQuestion().getMySubject());
-			System.out.println(attemptedRoom.getMyQuestion().getMyCorrectAnswer());
 			moveRooms = correct;
 			attemptedRoom.setIsAcessible(correct);
 			attemptedRoom.setIsLocked(!correct);
@@ -192,8 +191,9 @@ public class Game implements Serializable {
 			this.myMaze.useKey();
 			this.myMaze.obtainKey();
 		}
+		
 	}
-	
+
 	/**
 	 * Calls methods available from pause menu based on thePauseSelection
 	 * @param thePauseSelection identifies which pause menu function to call
@@ -209,7 +209,7 @@ public class Game implements Serializable {
 		case RESUME:
 			break;
 		case EXIT:
-			this.exitGame();
+			exitGame();
 			break;
 		}
 	}
@@ -219,14 +219,15 @@ public class Game implements Serializable {
 	 */
 	void saveGame() {
 		try {
-			
 			FileOutputStream fileOut = new FileOutputStream("./triviaMaze.ser");
+
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(myMaze);
 			out.close();
 			fileOut.close();
 			System.out.printf("Serialized data is saved in /triviaMaze.ser");
 		} catch (IOException i) {
+			// TODO Auto-generated catch block
 			i.printStackTrace();
 		}
 	}
@@ -235,7 +236,7 @@ public class Game implements Serializable {
 	 * Loads the Game state saved in triviaMaze.ser
 	 */
 	void loadGame() {
-		Maze m = null;
+		Maze m;
 		try {
 			FileInputStream fileIn = new FileInputStream("./triviaMaze.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -243,27 +244,33 @@ public class Game implements Serializable {
 			this.myMaze = m;
 			in.close();
 			fileIn.close();
+			this.playGame();
 		} catch (IOException i) {
+			// TODO Auto-generated catch block
 			i.printStackTrace();
 			return;
 		} catch (ClassNotFoundException c) {
+			// TODO Auto-generated catch block
 			c.printStackTrace();
 			return;
 		}
 	}
+
 	
+	/**
+	 * Closes the whole game/program.
+	 */
 	void exitGame() {
 		System.exit(0);
 	}
 
-	/*
+	/**
 	 * Entry point to the Game, initializes a game and calls playGame()
 	 */
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze());
+		testGame.myDisplay.showHowTo();
 		testGame.playGame();
 
 	}
-
 }

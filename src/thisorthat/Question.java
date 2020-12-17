@@ -1,41 +1,40 @@
 package thisorthat;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-public class Question implements java.io.Serializable {
-	
+/**
+ * Question is an abstraction of a question, its potential answers, and its correct answer 
+ * for use in a Trivia maze program.
+ */
+@SuppressWarnings("serial")
+public class Question implements Serializable {
 	/**
-	 * Generated serializable ID.
-	 */
-	private static final long serialVersionUID = -5975805758604528342L;
-	/*
 	 * The Subject to be placed in one of the categories in myAnswers
 	 */
 	private String mySubject;
-	/*
-	 * The Potential Categories to place the subject. The correct subject's index is myCorrectAnswer.
+	/**
+	 * The Potential Categories to place the subject. The correct subject's index is
+	 * myCorrectAnswer.
 	 */
 	private String[] myAnswers;
-	/*
+	/**
 	 * The correct subject's index in myAnswers.
 	 */
 	private int myCorrectAnswer;
-	/*
+	/**
+	 * Random used to select random question from database
+	 */
+	private Random rand = new Random();
+
+	/**
 	 * The database of questions and answers
 	 */
 	private Database myDatabase = new Database();
-//	/*
-//	 * The way that the data from the database is stored
-//	 */
-//	private Map<String, List<String>> myData = myDatabase.getDatabase();
-	/*
-	 * The way of choosing questions for a maze
-	 */
-	private Random rand = new Random();
-	/*
+
+	/**
 	 * Default Constructor for testing purposes
 	 */
 	public Question() {
@@ -49,20 +48,42 @@ public class Question implements java.io.Serializable {
 		this.myCorrectAnswer = Integer.valueOf(questions.get(3));
 	}
 
+	/**
+	 * Constructor for a new question not already in the database
+	 * @param theSubject What the question will be related to
+	 * @param theAnswers Possible answers that can be chosen from
+	 * @param theCorrectAnswer Which one of the possible answers
+	 *  is the correct one
+	 */
 	public Question(String theSubject, String[] theAnswers, int theCorrectAnswer) {
 		this.mySubject = theSubject;
 		this.myAnswers = theAnswers;
 		this.myCorrectAnswer = theCorrectAnswer;
 	}
 
+	/**
+	 * Getter for mySubject
+	 * 
+	 * @return mySubject
+	 */
 	public String getMySubject() {
 		return mySubject;
 	}
 
+	/**
+	 * Getter for myAnswers
+	 * 
+	 * @return myAnswers
+	 */
 	public String[] getMyAnswers() {
 		return myAnswers;
 	}
 
+	/**
+	 * Getter for myCorrectAnswer
+	 * 
+	 * @return myCorrectAnswer
+	 */
 	public int getMyCorrectAnswer() {
 		return myCorrectAnswer;
 	}

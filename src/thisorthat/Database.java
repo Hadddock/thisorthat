@@ -21,13 +21,14 @@ public class Database implements Serializable {
 	 * Generated serializable ID.
 	 */
 	private static final long serialVersionUID = -2990418274127860974L;
-	/*
-	 * 
+	/**
+	 * Database information mapped to prompt for access to 
+	 * information for each question
 	 */
 	private Map<String, List<String>> myDatabase = new HashMap<>();	
 	
-	/*
-	 * 
+	/**
+	 * Reads in a csv file and creates a SQLite database
 	 */
 	public Database() {
 		SQLiteDataSource data = null;
@@ -40,28 +41,31 @@ public class Database implements Serializable {
 				questions.add(Arrays.asList(info));
 			}
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
+		//Sets up a database url to input information
 		try {
 			data = new SQLiteDataSource();
 			data.setUrl("jdbc:sqlite:questions.db");
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
 	
+		//Creates table with columns related to data pieces in each question
 		String query = "CREATE TABLE IF NOT EXISTS questions ( " +
 				"TOPIC , " +
 				"PROMPT, ANSWER_0,"
 				+ "ANSWER_1 , "
-				+ "CORRECT_ANSWER_INDEX)";
+				+ "CORRECT_ANSWER_INDEX)";	
 		try ( Connection conn = data.getConnection();
 				Statement stmt = conn.createStatement(); ) {
 			int rv = stmt.executeUpdate(query);
-			System.out.println( "executeUpdate() returned " + rv );
 	      } catch ( SQLException e ) {
+	    	  // TODO Auto-generated catch block
 	    	  e.printStackTrace();
 	    	  System.exit(0);
     	  }
@@ -81,6 +85,7 @@ public class Database implements Serializable {
 				int rv = stmt.executeUpdate(s);
 			}
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -92,6 +97,7 @@ public class Database implements Serializable {
 			
 			ResultSet rs = stmt.executeQuery(query);
 			
+			//reads through questions and puts them in Map
 			while(rs.next()) {
 				String topic = rs.getString("TOPIC");
 				String prompt = rs.getString("PROMPT");
@@ -109,12 +115,14 @@ public class Database implements Serializable {
 			}
 			
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
 	}
-	/*
-	 * 
+	/**
+	 * Getter for myDatabase
+	 * @return myDatabase
 	 */
 	Map<String, List<String>> getDatabase() {
 		return this.myDatabase;

@@ -20,22 +20,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class Thisorthat_Test {
+class TestGame {
 Maze currentMaze;
 Game currentGame;
 Display currentDisplay;
-Robot robot;
 Scanner scan = new Scanner(System.in);
-//SETUP-----------------------------------------------------------------------------------SETUP
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-		
-	}
-
 	/*
 	 * Construct Test maze with this layout before each test
 	 * QGQ
@@ -75,7 +64,6 @@ Scanner scan = new Scanner(System.in);
 		currentMaze = new Maze(testRooms, testYPosition, testXPositon, testKeyStatus);
 		currentDisplay = new Display(currentMaze);
 		currentGame = new Game(currentMaze);
-		robot = new Robot();
 	}
 
 	@AfterEach
@@ -83,23 +71,6 @@ Scanner scan = new Scanner(System.in);
 		//TODO fix this
 	}
 
-//MODEL TESTS-----------------------------------------------------------------------------------MODEL TESTS	
-	@Test
-	void testObtainKey() {
-		// false due to current room not containing key.
-		currentMaze.obtainKey();
-		Assert.assertFalse(currentMaze.getHasKey());
-		//true due to moving to being in a room with a key
-		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
-		currentMaze.obtainKey();
-		//check that the player now has the key, and the room they got the key from no longer has a key
-		Assert.assertTrue(currentMaze.getHasKey());
-		Assert.assertFalse(currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].getIsKeyRoom());
-		
-	}
-	
-//CONTROLLER TESTS-----------------------------------------------------------------------------------CONTROLLER TESTS	
-	
 	@Test
 	void testRecieveMovementSelectionUp() {
 		currentGame.verifyAction(KeyEvent.VK_KP_UP);
@@ -136,7 +107,8 @@ Scanner scan = new Scanner(System.in);
 	@Test
 	void testRecieveMovementSelectionDownUnlocked() {
 		//press down arrow key, player now has the key
-		currentMaze.setHasKey(true);
+		currentMaze.getMyRooms()[currentMaze.getMyYPosition()][currentMaze.getMyXPosition()].setIsKeyRoom(true);
+		currentMaze.obtainKey();
 		currentGame.verifyAction(KeyEvent.VK_DOWN);
 		Assert.assertEquals(1, currentMaze.getMyXPosition());
 		Assert.assertEquals(2, currentMaze.getMyYPosition());
@@ -230,37 +202,4 @@ Scanner scan = new Scanner(System.in);
 		File save2 = new File("triviaMaze.ser");
 		Assert.assertEquals(save, save2);
 	}
-	
-//DISPLAY TESTS-----------------------------------------------------------------------------------DISPLAY TESTS	
-
-	@Test
-	void testShowMaze() {
-		try {
-			currentDisplay.showMaze(currentMaze);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	void testShowQuestion() {
-		currentDisplay.showQuestion(currentMaze.getMyRooms()[0][0].getMyQuestion());
-	}
-	
-	@Test
-	void testShowPauseMenu() {
-		currentDisplay.showPauseMenu();
-	}
-	
-	@Test
-	void testDisplayWinScreen() {
-		currentDisplay.displayWinScreen();
-	}
-	
-	@Test
-	void testDisplayLoseScreen() {
-		currentDisplay.displayLoseScreen();
-	}
-	
-}
+}	

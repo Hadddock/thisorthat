@@ -16,22 +16,23 @@ import java.util.Map;
 import org.sqlite.SQLiteDataSource;
 
 public class Database implements Serializable {
-
+	
 	/**
 	 * Generated serializable ID.
 	 */
 	private static final long serialVersionUID = -2990418274127860974L;
-	/*
-	 * 
+	/**
+	 * Database information mapped to prompt for access to 
+	 * information for each question
 	 */
-	private Map<String, List<String>> myDatabase = new HashMap<>();
-
-	/*
-	 * 
+	private Map<String, List<String>> myDatabase = new HashMap<>();	
+	
+	/**
+	 * Reads in a csv file and creates a SQLite database
 	 */
 	public Database() {
 		SQLiteDataSource data = null;
-
+		
 		final List<List<String>> questions = new ArrayList<>();
 		try (BufferedReader read = new BufferedReader(new FileReader("Questions.csv"));) {
 			String line;
@@ -40,51 +41,64 @@ public class Database implements Serializable {
 				questions.add(Arrays.asList(info));
 			}
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
+		//Sets up a database url to input information
 		try {
 			data = new SQLiteDataSource();
 			data.setUrl("jdbc:sqlite:questions.db");
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
-
-		String query = "CREATE TABLE IF NOT EXISTS questions ( " + "TOPIC , " + "PROMPT, ANSWER_0," + "ANSWER_1 , "
-				+ "CORRECT_ANSWER_INDEX)";
-		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
+	
+		//Creates table with columns related to data pieces in each question
+		String query = "CREATE TABLE IF NOT EXISTS questions ( " +
+				"TOPIC , " +
+				"PROMPT, ANSWER_0,"
+				+ "ANSWER_1 , "
+				+ "CORRECT_ANSWER_INDEX)";	
+		try ( Connection conn = data.getConnection();
+				Statement stmt = conn.createStatement(); ) {
 			int rv = stmt.executeUpdate(query);
-			System.out.println( "executeUpdate() returned " + rv );
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-
+	      } catch ( SQLException e ) {
+	    	  // TODO Auto-generated catch block
+	    	  e.printStackTrace();
+	    	  System.exit(0);
+    	  }
+		
 		List<String> queries = new ArrayList<>();
-		for (List<String> listS : questions.subList(1, questions.size())) {
+		for(List<String> listS: questions.subList(1, questions.size())) {
 			queries.add("INSERT INTO questions ( TOPIC, PROMPT, ANSWER_0, ANSWER_1, CORRECT_ANSWER_INDEX ) "
-					+ "VALUES ('" + listS.get(0) + "', '" + listS.get(1) + "', '" + listS.get(2) + "', '" + listS.get(3)
-					+ "', '" + listS.get(4) + "' )");
+					+ "VALUES ('"+ listS.get(0) +"', '"+ listS.get(1) +
+					"', '"+ listS.get(2) +"', '"+ listS.get(3) +"', '" +
+					listS.get(4) + "' )");
 		}
-
-		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
-			int rv = 0;
-			for (String s : queries) {
-				rv = stmt.executeUpdate(s);
+		
+		try (Connection conn = data.getConnection();
+				Statement stmt = conn.createStatement();) {
+//			int rv = 0;
+			for (String s: queries) {
+				int rv = stmt.executeUpdate(s);
 			}
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
-
-		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
-
+		
+		try(Connection conn = data.getConnection();
+				Statement stmt = conn.createStatement();) {
+			
 			query = "SELECT * FROM questions";
-
+			
 			ResultSet rs = stmt.executeQuery(query);
-
-			while (rs.next()) {
+			
+			//reads through questions and puts them in Map
+			while(rs.next()) {
 				String topic = rs.getString("TOPIC");
 				String prompt = rs.getString("PROMPT");
 				String answer1 = rs.getString("ANSWER_0");
@@ -99,15 +113,16 @@ public class Database implements Serializable {
 					myDatabase.put(prompt, info);
 				}
 			}
-
+			
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
 	}
-
-	/*
-	 * 
+	/**
+	 * Getter for myDatabase
+	 * @return myDatabase
 	 */
 	Map<String, List<String>> getDatabase() {
 		return this.myDatabase;

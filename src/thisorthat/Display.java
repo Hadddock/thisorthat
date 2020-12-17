@@ -121,6 +121,7 @@ public class Display implements KeyListener {
 			JFrame howToFrame = new JFrame("How to play!");
 			howToFrame.setResizable(true);
 			howToFrame.setPreferredSize(new Dimension(800, 800));
+			howToFrame.setAlwaysOnTop(true);
 			howToFrame.getContentPane().setLayout(null);
 
 			// Sets up right button and its listener
@@ -137,7 +138,6 @@ public class Display implements KeyListener {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					stopYelling.setEnabled(true);
 				}
 			});
 
@@ -194,7 +194,6 @@ public class Display implements KeyListener {
 	}
 
 	public void showMaze(final Maze theMaze) throws IOException {
-
 		// Create maze w/ images
 		mazePanel = new JPanel();
 		Room[][] rooms = theMaze.getMyRooms();
@@ -283,6 +282,8 @@ public class Display implements KeyListener {
 	}
 
 	public boolean showQuestion(final Question theQuestion) {
+		myQuestionFrame.removeAll();
+		myQuestionFrame = new JFrame("Question");
 		JLabel question = new JLabel(theQuestion.getMySubject(), SwingConstants.CENTER);
 		// answerOne button and listener
 		JButton answers[] = new JButton[2];

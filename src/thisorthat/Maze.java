@@ -50,32 +50,6 @@ public class Maze implements Serializable {
 	 * XXX constructor for Maze for use in tests
 	 */
 	public Maze() {
-		// -------------------------------------TEMP STUFF UNTIL NEW IS DONE-----------------------------------
-//		Room[][] testRooms = new Room[3][3];
-//		// make Gullunge/basic question room
-		Room testRoomGullenge = new Room(new Question(), false, false, false, false);
-//		testRooms[0][0] = new Room(testRoomGullenge);
-//		testRooms[0][2] = new Room(testRoomGullenge);
-//		testRooms[1][2] = new Room(testRoomGullenge);
-//		testRooms[2][0] = new Room(testRoomGullenge);
-//		testRooms[2][2] = new Room(testRoomGullenge);
-//		//make start room
-//		testRooms[1][1] = new Room(new Question(), true, false, false, false);
-//
-//		// make goal room
-//		testRooms[0][1] = new Room(new Question(), true, false, true, false);
-//		// make key room
-//		testRooms[1][0] = new Room(new Question(), false, false, false, true);
-//
-//		// make locked room
-//		testRooms[2][1] = new Room(new Question(), false, true, false, false);
-//
-//		//TODO replace null with the test display variable
-//		this.myRooms = testRooms;
-//		this.myYPosition = 1;
-//		this.myXPosition = 1;
-		
-		//------------------------------NEW RANDOM 9 X 9-----------------------------------------------------
 		Room[][] maze = new Room[MAZE_SIZE][MAZE_SIZE];
 		Random rand = new Random();
 		int keyX = generateRandomTen();
@@ -94,7 +68,7 @@ public class Maze implements Serializable {
 					maze[i][j] = new Room(new Question(), true, false, false, false);
 				} else {
 					// make a random question room
-					maze[i][j] = new Room(testRoomGullenge);
+					maze[i][j] = new Room(new Question(),false,false,false,false);
 				}
 			}
 		}

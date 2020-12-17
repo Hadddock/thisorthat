@@ -255,7 +255,12 @@ Scanner scan = new Scanner(System.in);
 	
 	@Test
 	void testDisplayWinScreen() {
-		currentDisplay.displayWinScreen();
+		try {
+			currentDisplay.displayWinScreen();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

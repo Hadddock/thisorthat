@@ -195,7 +195,7 @@ public class Game {
 	 * Calls methods available from pause menu based on thePauseSelection
 	 * @param thePauseSelection identifies which pause menu function to call
 	 */
-	private void performPauseSelection(int thePauseSelection) {
+	void performPauseSelection(int thePauseSelection) {
 		switch (thePauseSelection) {
 		case SAVE:
 			this.saveGame();
@@ -206,6 +206,7 @@ public class Game {
 		case RESUME:
 			break;
 		case EXIT:
+			exitGame();
 			break;
 		}
 	}

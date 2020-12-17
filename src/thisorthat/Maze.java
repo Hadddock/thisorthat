@@ -66,7 +66,7 @@ public class Maze implements Serializable {
 				if((i == keyX && j == keyY)) {
 					maze[i][j] = new Room(new Question(), false, false, false, true);
 				} else if (i == goalX && j == goalY) { // make goal room
-					maze[i][j] = new Room(new Question(), false, false, true, false);
+					maze[i][j] = new Room(new Question(), true, false, true, false);
 				} else if (i == MAZE_SIZE/2 && j == MAZE_SIZE/2) { // make start room
 					maze[i][j] = new Room(new Question(), true, false, false, false);
 				} else {

@@ -6,6 +6,11 @@ import java.util.Map;
 import java.util.Random;
 
 public class Question implements java.io.Serializable {
+	
+	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = -5975805758604528342L;
 	/*
 	 * The Subject to be placed in one of the categories in myAnswers
 	 */
@@ -22,10 +27,10 @@ public class Question implements java.io.Serializable {
 	 * The database of questions and answers
 	 */
 	private Database myDatabase = new Database();
-	/*
-	 * The way that the data from the database is stored
-	 */
-	private Map<String, List<String>> myData = myDatabase.getDatabase();
+//	/*
+//	 * The way that the data from the database is stored
+//	 */
+//	private Map<String, List<String>> myData = myDatabase.getDatabase();
 	/*
 	 * The way of choosing questions for a maze
 	 */
@@ -34,10 +39,10 @@ public class Question implements java.io.Serializable {
 	 * Default Constructor for testing purposes
 	 */
 	public Question() {
-		List<String> keys = new ArrayList<String>(myData.keySet());
+		List<String> keys = new ArrayList<String>(myDatabase.getDatabase().keySet());
 		int randomInt = rand.nextInt(keys.size());
 		String prompt = keys.get(randomInt);
-		List<String> questions = myData.get(prompt);
+		List<String> questions = myDatabase.getDatabase().get(prompt);
 		this.mySubject = prompt;
 		this.myAnswers = new String[] { questions.get(1), questions.get(2) };
 		System.out.println(questions.get(1) + "," + questions.get(2));

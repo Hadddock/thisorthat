@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,7 +29,12 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("deprecation")
-public class Display implements KeyListener{
+public class Display implements KeyListener, Serializable {
+	
+	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = 8173175536181212671L;
 	/*
 	 * Key Event code for up arrow key
 	 */

@@ -5,12 +5,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 /*
  * Game is trivia maze program where players navigate to the exit of a maze
  * by successfully answering trivia questions.
  */
-public class Game {
+public class Game implements Serializable {
 
+	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = -3402963501096468856L;
 	/*
 	 * Key Event code for up arrow key
 	 */
@@ -174,6 +179,8 @@ public class Game {
 		// if moving to question room, prompt the question for that room
 		else if (!attemptedRoom.getIsAcessible()) {
 			boolean correct = myDisplay.showQuestion(attemptedRoom.getMyQuestion());
+			System.out.println(attemptedRoom.getMyQuestion().getMySubject());
+			System.out.println(attemptedRoom.getMyQuestion().getMyCorrectAnswer());
 			moveRooms = correct;
 			attemptedRoom.setIsAcessible(correct);
 			attemptedRoom.setIsLocked(!correct);
@@ -191,7 +198,7 @@ public class Game {
 	 * Calls methods available from pause menu based on thePauseSelection
 	 * @param thePauseSelection identifies which pause menu function to call
 	 */
-	private void performPauseSelection(int thePauseSelection) {
+	void performPauseSelection(int thePauseSelection) {
 		switch (thePauseSelection) {
 		case SAVE:
 			this.saveGame();
@@ -200,6 +207,9 @@ public class Game {
 			this.loadGame();
 			break;
 		case RESUME:
+			break;
+		case EXIT:
+			this.exitGame();
 			break;
 		}
 	}
@@ -211,7 +221,6 @@ public class Game {
 		try {
 			
 			FileOutputStream fileOut = new FileOutputStream("./triviaMaze.ser");
-
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(myMaze);
 			out.close();
@@ -241,6 +250,10 @@ public class Game {
 			c.printStackTrace();
 			return;
 		}
+	}
+	
+	void exitGame() {
+		System.exit(0);
 	}
 
 	/*

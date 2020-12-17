@@ -3,6 +3,10 @@ package thisorthat;
 public class Room implements java.io.Serializable {
 	
 	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = -6185791874853493369L;
+	/**
 	 * The question for this current room
 	 */
 	private Question myQuestion;

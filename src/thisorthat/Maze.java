@@ -13,6 +13,11 @@ import java.util.List;
  *
  */
 public class Maze implements Serializable {
+	
+	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = -3245226801495676746L;
 	/*
 	 * 2-D array of rooms composing the Maze
 	 */
@@ -50,11 +55,11 @@ public class Maze implements Serializable {
 		Room[][] testRooms = new Room[3][3];
 		// make Gullunge/basic question room
 		Room testRoomGullenge = new Room(new Question(), false, false, false, false);
-		testRooms[0][0] = new Room(testRoomGullenge);
-		testRooms[0][2] = new Room(testRoomGullenge);
-		testRooms[1][2] = new Room(testRoomGullenge);
-		testRooms[2][0] = new Room(testRoomGullenge);
-		testRooms[2][2] = new Room(testRoomGullenge);
+		testRooms[0][0] = new Room(new Question(), false, false, false, false);
+		testRooms[0][2] = new Room(new Question(), false, false, false, false);
+		testRooms[1][2] = new Room(new Question(), false, false, false, false);
+		testRooms[2][0] = new Room(new Question(), false, false, false, false);
+		testRooms[2][2] = new Room(new Question(), false, false, false, false);
 		//make start room
 		testRooms[1][1] = new Room(new Question(), true, false, false, false);
 

@@ -22,8 +22,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
+/**
+ * 
+ * @author Edward Robinson, Justin Haddock, and Elisabeth Jewett
+ *
+ */
 public class Display implements KeyListener {
 	/*
 	 * Key Event code for up arrow key
@@ -61,46 +65,94 @@ public class Display implements KeyListener {
 	 * int to represent selecting Exit option
 	 */
 	public static final int EXIT = 8;
+	/*
+	 * Window holding myMazeFrame.
+	 */
 	private JWindow myWindow;
+	/*
+	 * JFrame containing all Components used to generate and display the maze.
+	 */
 	private JFrame myMazeFrame;
+	/*
+	 * JFrame containing all Components used to generate and display questions.
+	 */
 	private JFrame myQuestionFrame;
+	/*
+	 * JFrame containing all Components used to generate and display the pause menu.
+	 */
 	private JFrame myPauseFrame;
+	/**
+	 * int to represent the pause selection made in pause menu.
+	 */
 	private int pauseSelection = 0;
+	/*
+	 * boolean to represent player's answer to a question.
+	 */
 	private boolean correct;
+	/*
+	 * boolean to represent if a player has made an answer to a question yet.
+	 */
 	private boolean unanswered = true;
+	/*
+	 * GridBagConstraints object for GridBagLayout of the mazePanel.
+	 */
 	private GridBagConstraints gbc;
+	/*
+	 * JPanel containing the Components for the maze itself.
+	 */
 	private JPanel mazePanel;
+	/*
+	 * int to represent key pressed by player.
+	 */
 	int keyPressed;
 
+	/**
+	 * Public constructor to initialize all the fields in Display class.
+	 * 
+	 * @param theMaze the Maze that will be generated onto the GUI.
+	 * @throws IOException when any files are not found when images are created.
+	 */
 	public Display(Maze theMaze) throws IOException {
-
 		myMazeFrame = new JFrame("Maze");
 		myMazeFrame.addKeyListener(this);
 		myMazeFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		myMazeFrame.setUndecorated(true);
 		myMazeFrame.setVisible(true);
 		myMazeFrame.toFront();
-		myMazeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
 		myQuestionFrame = new JFrame("Question");
-		myQuestionFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
 		myQuestionFrame.setResizable(false);
 		myPauseFrame = new JFrame("Pause");
 		buildPauseFrame();
-		myPauseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
 		myWindow = new JWindow(myMazeFrame);
-
 	}
 
+	/**
+	 * Method to record what key is pressed.
+	 */
 	public void keyPressed(KeyEvent e) {
 		keyPressed = e.getKeyCode();
 	}
 
+	/**
+	 * Method to indicate when a key has been released.
+	 */
 	public void keyReleased(KeyEvent e) {
 	}
 
+	/**
+	 * Method to indicate when a key has been pressed.
+	 */
 	public void keyTyped(KeyEvent e) {
 	}
 
+	/**
+	 * Accepts user input and relays it back to the controller, Game class.
+	 * 
+	 * @return the selected action of the player indicated by keypress.
+	 */
 	int acceptMazeInput() {
 		System.out.println("\nChoose which direction to go: \n");
 		myMazeFrame.toFront();
@@ -116,6 +168,9 @@ public class Display implements KeyListener {
 		return selectedAction;
 	}
 
+	/**
+	 * A popup window to introduce and explain the game.
+	 */
 	void showHowTo() {
 		try {
 			JFrame howToFrame = new JFrame("How to play!");
@@ -152,7 +207,7 @@ public class Display implements KeyListener {
 					try {
 						howToFrame.getContentPane().removeAll();
 						howToFrame.getContentPane().setLayout(null);
-						howToFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						howToFrame.setDefaultCloseOperation(howToFrame.DISPOSE_ON_CLOSE);
 
 						JLabel overlay = new JLabel("");
 						overlay.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToP2Overlay.png"))));
@@ -193,6 +248,13 @@ public class Display implements KeyListener {
 		}
 	}
 
+	/**
+	 * Generates the maze display and updates player position, locked rooms, and
+	 * cleared rooms.
+	 * 
+	 * @param theMaze the Maze being generated into the GUI.
+	 * @throws IOException when files are not found when creating images.
+	 */
 	public void showMaze(final Maze theMaze) throws IOException {
 		// Create maze w/ images
 		mazePanel = new JPanel();
@@ -274,13 +336,22 @@ public class Display implements KeyListener {
 			}
 		}
 
+		JLabel pause = new JLabel("Press ESC to access the pause menu");
 		mazePanel.setBackground(Color.decode("#0058A2"));
 		// add to maze
 		myMazeFrame.add(mazePanel, BorderLayout.CENTER);
+		myMazeFrame.add(pause, BorderLayout.SOUTH);
 		prioritizeFrame(myMazeFrame);
 		myWindow.setVisible(true);
 	}
 
+	/**
+	 * Generates the question frame and gives the players their two options to
+	 * answer from.
+	 * 
+	 * @param theQuestion the Question being displayed to the player.
+	 * @return true if player is correct, false otherwise
+	 */
 	public boolean showQuestion(final Question theQuestion) {
 		myQuestionFrame.removeAll();
 		myQuestionFrame = new JFrame("Question");
@@ -328,6 +399,11 @@ public class Display implements KeyListener {
 		return correct;
 	}
 
+	/**
+	 * Displays the pause menu.
+	 * 
+	 * @return the button pressed by the player indicated by an int value.
+	 */
 	public int showPauseMenu() {
 		prioritizeFrame(myPauseFrame);
 		pauseSelection = -1;
@@ -345,6 +421,9 @@ public class Display implements KeyListener {
 		return pauseSelection;
 	}
 
+	/**
+	 * Generates myPauseFrame.
+	 */
 	private void buildPauseFrame() {
 		JLabel paused = new JLabel("The game is paused.", SwingConstants.CENTER);
 		// create resume button and its action listener
@@ -491,13 +570,18 @@ public class Display implements KeyListener {
 		myPauseFrame.setPreferredSize(new Dimension(600, 100));
 	}
 
+	/**
+	 * Generates and displays the win screen when the player wins the game. Also
+	 * gives a button for the player to exit the game.
+	 * 
+	 * @throws IOException
+	 */
 	public void displayWinScreen() throws IOException {
 		JFrame winFrame = new JFrame("A winner is you!");
 		JLabel winner = new JLabel("THE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA!",
 				SwingConstants.CENTER);
 		BufferedImage image = ImageIO.read(new File("./images/highPriest.png"));
 		JLabel highPriest = new JLabel(new ImageIcon(image));
-		// WORK ON STYLIZING LATER BUT IT WORKS
 		JButton endGame = new JButton("End Game");
 		endGame.addActionListener(new ActionListener() {
 			@Override
@@ -507,7 +591,7 @@ public class Display implements KeyListener {
 			}
 		});
 
-		winFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		winFrame.setDefaultCloseOperation(winFrame.EXIT_ON_CLOSE);
 		winFrame.add(highPriest, BorderLayout.CENTER);
 		winFrame.add(endGame, BorderLayout.SOUTH);
 		winFrame.add(winner, BorderLayout.NORTH);
@@ -515,12 +599,15 @@ public class Display implements KeyListener {
 		prioritizeFrame(winFrame);
 	}
 
+	/**
+	 * Generates and displays the losing screen when the player loses the game. Also
+	 * gives a button for the player to end the game after a loss.
+	 */
 	public void displayLoseScreen() {
 		JFrame loseFrame = new JFrame("You lost the game!");
 		JLabel loser = new JLabel("THE WINDING CORRIDORS OF IKEA HAVE CLAIMED YOUR SOUL, YOU LOST!",
 				SwingConstants.CENTER);
 		JButton endGame = new JButton("End Game");
-		// STYLIZE LATER, IT WORKS FOR NOW
 		endGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
@@ -534,6 +621,11 @@ public class Display implements KeyListener {
 		prioritizeFrame(loseFrame);
 	}
 
+	/**
+	 * Private helper method to prioritize a frame to the front and hold focus.
+	 * 
+	 * @param theFrame the JFrame to be focused.
+	 */
 	private void prioritizeFrame(JFrame theFrame) {
 		theFrame.pack();
 		theFrame.setLocationRelativeTo(null);
@@ -542,5 +634,4 @@ public class Display implements KeyListener {
 		theFrame.requestFocus();
 		theFrame.setDefaultCloseOperation(0);
 	}
-
 }

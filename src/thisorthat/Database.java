@@ -69,9 +69,9 @@ public class Database implements Serializable {
 		}
 
 		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
-//			int rv = 0;
+			int rv = 0;
 			for (String s : queries) {
-				int rv = stmt.executeUpdate(s);
+				rv = stmt.executeUpdate(s);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

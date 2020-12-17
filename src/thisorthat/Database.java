@@ -2,19 +2,34 @@ package thisorthat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.sqlite.SQLiteDataSource;
 
-public class Database {
+public class Database implements Serializable {
 	
-	public static void main(String[] args) {
+	/**
+	 * Generated serializable ID.
+	 */
+	private static final long serialVersionUID = -2990418274127860974L;
+	/*
+	 * 
+	 */
+	private Map<String, List<String>> myDatabase = new HashMap<>();	
+	
+	/*
+	 * 
+	 */
+	public Database() {
 		SQLiteDataSource data = null;
 		
 		final List<List<String>> questions = new ArrayList<>();
@@ -83,10 +98,14 @@ public class Database {
 				String answer1 = rs.getString("ANSWER_0");
 				String answer2 = rs.getString("ANSWER_1");
 				String correctAnswerIndex = rs.getString("CORRECT_ANSWER_INDEX");
-				System.out.println( "Result: Topic = " + topic + ", Prompt =" + prompt +
-	                    ", Answer_0 = " + answer1 +
-	                    ", Answer_1 = " + answer2 +
-	                    ", Correct_Answer_Index = " + correctAnswerIndex);
+				if (!myDatabase.containsKey(prompt)) {
+					List<String> info = new ArrayList<>();
+					info.add(topic);
+					info.add(answer1);
+					info.add(answer2);
+					info.add(correctAnswerIndex);
+					myDatabase.put(prompt, info);
+				}
 			}
 			
 		} catch (SQLException e) {
@@ -94,5 +113,10 @@ public class Database {
 			System.exit(0);
 		}
 	}
-
+	/*
+	 * 
+	 */
+	Map<String, List<String>> getDatabase() {
+		return this.myDatabase;
+	}
 }

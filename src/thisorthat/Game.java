@@ -63,7 +63,12 @@ public class Game {
 	 */
 	public Game(Maze theMaze) {
 		this.myMaze = theMaze;
-		this.myDisplay = new Display(this.myMaze);
+		try {
+			this.myDisplay = new Display(this.myMaze);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -84,7 +89,6 @@ public class Game {
 			//get action from GUI
 			selectedAction = myDisplay.acceptMazeInput();
 			//check if the action is valid, if so perform
-			
 			//if pausing, perform selected pause function
 			if(selectedAction == ESCAPE) {
 				pauseSelection = myDisplay.showPauseMenu();
@@ -101,9 +105,7 @@ public class Game {
 				if(!this.isFinished) {
 					this.isFinished = !this.myMaze.checkWinPossible();
 				}
-				
-			}
-			
+			}	
 		}
 		myDisplay.showMaze(this.myMaze);
 		//if at goal, display win screen
@@ -115,7 +117,6 @@ public class Game {
 		else {
 			this.myDisplay.displayLoseScreen();
 		}
-		
 	}
 	/*
 	 * Verifies if the action the user is attempting to make matches the options available to the user,
@@ -123,6 +124,7 @@ public class Game {
 	 * @param theSelectedDirection the direction relative to the player's current coordinates the
 	 * player is attempting to move to
 	 */
+
 	private void verifyAction(int theSelectedDirection) {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
@@ -140,6 +142,8 @@ public class Game {
 		case LEFT:
 			dx--;
 			break;
+		case ESCAPE:
+			
 		}
 		// performAction if InBounds
 		if (x + dx >= 0 && x + dx <= this.myMaze.getMyRooms()[0].length - 1 && y + dy >= 0
@@ -147,6 +151,7 @@ public class Game {
 			performAction(dy, dx);
 		}
 	}
+
 	/*
 	 * Handle the player attempting to access a room, calling the appropriate method based on the player's key status
 	 * and the fields of the room the player is attempting to access
@@ -184,12 +189,14 @@ public class Game {
 			this.myMaze.useKey();
 			this.myMaze.obtainKey();
 		}
+		
 	}
+
 	/*
 	 * Calls methods available from pause menu based on thePauseSelection
 	 * @param thePauseSelection identifies which pause menu function to call
 	 */
-	private void performPauseSelection(int thePauseSelection) {
+	void performPauseSelection(int thePauseSelection) {
 		switch (thePauseSelection) {
 		case SAVE:
 			this.saveGame();
@@ -199,13 +206,16 @@ public class Game {
 			break;
 		case RESUME:
 			break;
+		case EXIT:
+			exitGame();
+			break;
 		}
 	}
 	
 	/*
 	 * Saves the Game state to triviaMaze.ser
 	 */
-	private void saveGame() {
+	void saveGame() {
 		try {
 			FileOutputStream fileOut = new FileOutputStream("./triviaMaze.ser");
 
@@ -222,7 +232,7 @@ public class Game {
 	/*
 	 * Loads the Game state saved in triviaMaze.ser
 	 */
-	private void loadGame() {
+	void loadGame() {
 		Maze m = null;
 		try {
 			FileInputStream fileIn = new FileInputStream("./triviaMaze.ser");
@@ -231,6 +241,7 @@ public class Game {
 			this.myMaze = m;
 			in.close();
 			fileIn.close();
+			this.playGame();
 		} catch (IOException i) {
 			i.printStackTrace();
 			return;
@@ -243,18 +254,7 @@ public class Game {
 	
 	//TODO Exit Game needs to be a window in GUI, not use the console
 	private void exitGame() {
-		Scanner console = new Scanner(System.in);
-		System.out.println("Would you like to exit the game? (y or n)");
-		String decision = console.next();
-		console.close();
-		while (decision.equalsIgnoreCase("y") || decision.equalsIgnoreCase("n")) {
-			if (decision.equalsIgnoreCase("y")) {
-				System.exit(0);
-			} else {
-				// TODO exit pause menu
-				break;
-			}
-		}
+		System.exit(0);
 	}
 
 	/*
@@ -263,8 +263,8 @@ public class Game {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze());
+		testGame.myDisplay.showHowTo();
 		testGame.playGame();
 
 	}
-
 }

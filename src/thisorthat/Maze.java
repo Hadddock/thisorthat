@@ -75,7 +75,7 @@ public class Maze implements Serializable {
 //		this.myYPosition = 1;
 //		this.myXPosition = 1;
 		
-		//------------------------------NEW RANDOM 10 X 10-----------------------------------------------------
+		//------------------------------NEW RANDOM 9 X 9-----------------------------------------------------
 		Room[][] maze = new Room[MAZE_SIZE][MAZE_SIZE];
 		Random rand = new Random();
 		int keyX = generateRandomTen();

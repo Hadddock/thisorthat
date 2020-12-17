@@ -87,7 +87,6 @@ public class Display implements KeyListener {
 		buildPauseFrame();
 		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
 		myWindow = new JWindow(myMazeFrame);
-		showHowTo();
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -115,64 +114,69 @@ public class Display implements KeyListener {
 		}
 		return selectedAction;
 	}
-	
-	private void showHowTo() {
+
+	void showHowTo() {
 		try {
 			JFrame howToFrame = new JFrame("How to play!");
-			howToFrame.setResizable(false);
-			howToFrame.setPreferredSize(new Dimension(800,800));
+			howToFrame.setResizable(true);
+			howToFrame.setPreferredSize(new Dimension(800, 800));
 			howToFrame.getContentPane().setLayout(null);
-			
+
+			// Sets up right button and its listener
 			JButton stopYelling = new JButton("");
 			stopYelling.setIcon(new ImageIcon(ImageIO.read(new File("./images/stopYelling.png"))));
 			stopYelling.setBounds(461, 668, 205, 60);
 			howToFrame.getContentPane().add(stopYelling);
-			
+			stopYelling.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent theEvent) {
+					try {
+						stopYelling.setIcon(new ImageIcon(ImageIO.read(new File("./images/no.png"))));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					stopYelling.setEnabled(true);
+				}
+			});
+
+			// sets up left button and its listener
 			JButton findOut = new JButton("");
 			findOut.setIcon(new ImageIcon(ImageIO.read(new File("./images/FindOut.png"))));
 			findOut.setBounds(111, 668, 205, 60);
 			howToFrame.getContentPane().add(findOut);
-			
-			JLabel fearNot = new JLabel("");
-			fearNot.setIcon(new ImageIcon(ImageIO.read(new File("./images/fearNot.png"))));
-			fearNot.setBounds(76, 571, 635, 86);
-			howToFrame.getContentPane().add(fearNot);
-			
-			JLabel lostIKEA = new JLabel("");
-			lostIKEA.setIcon(new ImageIcon(ImageIO.read(new File("./images/lost.png"))));
-			lostIKEA.setBounds(111, 386, 555, 86);
-			howToFrame.getContentPane().add(lostIKEA);
-			
-			JLabel you = new JLabel("");
-			you.setIcon(new ImageIcon(ImageIO.read(new File("./images/kid.png"))));
-			you.setBounds(10, 315, 768, 60);
-			howToFrame.getContentPane().add(you);
-			
-			JLabel disLost = new JLabel("");
-			disLost.setIcon(new ImageIcon(ImageIO.read(new File("./images/disLost.png"))));
-			disLost.setBounds(10, 273, 765, 45);
-			howToFrame.getContentPane().add(disLost);
-			
-			JLabel disney = new JLabel("");
-			disney.setIcon(new ImageIcon(ImageIO.read(new File("./images/college.png"))));
-			disney.setBounds(10, 200, 766, 69);
-			howToFrame.getContentPane().add(disney);
-			
-			JLabel situation = new JLabel("");
-			situation.setIcon(new ImageIcon(ImageIO.read(new File("./images/situation.png"))));
-			situation.setBounds(10, 97, 351, 43);
-			howToFrame.getContentPane().add(situation);
-			
-			JLabel haveYou = new JLabel("");
-			haveYou.setIcon(new ImageIcon(ImageIO.read(new File("./images/haveYou.png"))));
-			haveYou.setBounds(10, 151, 756, 47);
-			howToFrame.getContentPane().add(haveYou);
-			
-			JLabel title = new JLabel("");
-			title.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToTitle.png"))));
-			title.setBounds(10, 11, 768, 75);
-			howToFrame.getContentPane().add(title);
-			
+			findOut.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent theEvent) {
+					try {
+						howToFrame.getContentPane().removeAll();
+						howToFrame.getContentPane().setLayout(null);
+						howToFrame.setDefaultCloseOperation(howToFrame.DISPOSE_ON_CLOSE);
+
+						JLabel overlay = new JLabel("");
+						overlay.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToP2Overlay.png"))));
+						overlay.setBounds(0, 0, 813, 812);
+						howToFrame.getContentPane().add(overlay);
+
+						JLabel background = new JLabel("");
+						background.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToBG.png"))));
+						background.setBounds(0, 0, 799, 774);
+						howToFrame.getContentPane().add(background);
+
+						howToFrame.revalidate();
+						howToFrame.repaint();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+
+			JLabel overlay = new JLabel("");
+			overlay.setBounds(0, 0, 794, 809);
+			overlay.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToP1Overlay.png"))));
+			howToFrame.getContentPane().add(overlay);
+
 			JLabel background = new JLabel("");
 			background.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToBG.png"))));
 			background.setBounds(0, 0, 794, 771);
@@ -306,7 +310,7 @@ public class Display implements KeyListener {
 		question.setOpaque(true);
 		myQuestionFrame.add(answerMenu, BorderLayout.SOUTH);
 		myQuestionFrame.add(question, BorderLayout.CENTER);
-		myQuestionFrame.setPreferredSize(new Dimension(300, 200));
+		myQuestionFrame.setPreferredSize(new Dimension(300, 150));
 		myQuestionFrame.revalidate();
 		myQuestionFrame.repaint();
 		prioritizeFrame(myQuestionFrame);
@@ -352,15 +356,14 @@ public class Display implements KeyListener {
 		load.setPreferredSize(prefButtonSize);
 		JButton help = new JButton();
 		help.setPreferredSize(prefButtonSize);
+		JButton exit = new JButton();
+		exit.setPreferredSize(prefButtonSize);
 		try {
-			BufferedImage img = ImageIO.read(new File("./images/resume.png"));
-			resume.setIcon(new ImageIcon(img));
-			img = ImageIO.read(new File("./images/save.png"));
-			save.setIcon(new ImageIcon(img));
-			img = ImageIO.read(new File("./images/load.png"));
-			load.setIcon(new ImageIcon(img));
-			img = ImageIO.read(new File("./images/help.png"));
-			help.setIcon(new ImageIcon(img));
+			resume.setIcon(new ImageIcon(ImageIO.read(new File("./images/resume.png"))));
+			save.setIcon(new ImageIcon(ImageIO.read(new File("./images/save.png"))));
+			load.setIcon(new ImageIcon(ImageIO.read(new File("./images/load.png"))));
+			help.setIcon(new ImageIcon(ImageIO.read(new File("./images/help.png"))));
+			exit.setIcon(new ImageIcon(ImageIO.read(new File("./images/exit.png"))));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -411,31 +414,16 @@ public class Display implements KeyListener {
 					panel.setBackground(Color.decode("#0058A2"));
 					panel.setLayout(null);
 
-					JLabel title = new JLabel();
-					title.setBounds(30, 0, 731, 141);
-					title.setIcon(new ImageIcon(ImageIO.read(new File("./images/title.png"))));
-					panel.add(title);
-
-					JLabel keybinds = new JLabel();
-					keybinds.setBounds(40, 152, 240, 266);
-					keybinds.setIcon(new ImageIcon(ImageIO.read(new File("./images/keybindings.png"))));
-					panel.add(keybinds);
-
-					JLabel steps = new JLabel();
-					steps.setIcon(new ImageIcon(ImageIO.read(new File("./images/steps.png"))));
-					steps.setBounds(40, 429, 704, 335);
-					panel.add(steps);
-
-					JLabel legend = new JLabel();
-					legend.setIcon(new ImageIcon(ImageIO.read(new File("./images/legend.png"))));
-					legend.setBounds(503, 152, 258, 453);
-					panel.add(legend);
+					JLabel overlay = new JLabel("");
+					overlay.setIcon(new ImageIcon(ImageIO.read(new File("./images/helpOverlay.png"))));
+					overlay.setBounds(0, 0, 787, 764);
+					panel.add(overlay);
 
 					JLabel goal = new JLabel("");
 					goal.setToolTipText(
 							"This is the goal! Upon answering the question correctly and entering the exit room, you have won  the game and are the new High Priest of IKEA!");
 					goal.setIcon(new ImageIcon(ImageIO.read(new File("./images/helpGoal.jpg"))));
-					goal.setBounds(671, 291, 90, 84);
+					goal.setBounds(690, 310, 90, 84);
 					panel.add(goal);
 
 					JLabel locked = new JLabel("");
@@ -449,21 +437,21 @@ public class Display implements KeyListener {
 					player.setToolTipText(
 							"This little goober is you! Wherever you see him, this is your position on the map!");
 					player.setIcon(new ImageIcon(ImageIO.read(new File("./images/helpPlayer.jpg"))));
-					player.setBounds(671, 236, 90, 96);
+					player.setBounds(690, 220, 90, 96);
 					panel.add(player);
 
 					JLabel question = new JLabel("");
 					question.setToolTipText(
 							"This denotes a question room! If a room has this symbol on it, it means you haven't answered a question there yet and it is a room you can enter upon a correct answer to a trivia question!");
 					question.setIcon(new ImageIcon(ImageIO.read(new File("./images/helpQuestion.png"))));
-					question.setBounds(681, 476, 80, 78);
+					question.setBounds(690, 450, 80, 78);
 					panel.add(question);
 
 					JLabel key = new JLabel("");
 					key.setToolTipText(
 							"This is a key! When you encounter a key room, if you answer the question correctly, you now have a key in your possession! A key is a one-time use item that allows you to enter a locked door!");
 					key.setIcon(new ImageIcon(ImageIO.read(new File("./images/helpKey.png"))));
-					key.setBounds(681, 565, 80, 78);
+					key.setBounds(681, 540, 80, 78);
 					panel.add(key);
 
 					helpFrame.pack();
@@ -475,7 +463,6 @@ public class Display implements KeyListener {
 			}
 		});
 
-		JButton exit = new JButton("Exit");
 		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
@@ -485,6 +472,8 @@ public class Display implements KeyListener {
 
 				if (confirmed == JOptionPane.YES_OPTION) {
 					System.exit(0);
+				} else {
+					pauseSelection = RESUME;
 				}
 				myPauseFrame.dispose();
 			}

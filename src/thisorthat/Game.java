@@ -269,6 +269,7 @@ public class Game {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Game testGame = new Game(new Maze());
+		testGame.myDisplay.showHowTo();
 		testGame.playGame();
 
 	}

@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
-
+import javax.swing.WindowConstants;
 
 public class Display implements KeyListener {
 	/*
@@ -72,7 +72,6 @@ public class Display implements KeyListener {
 	private JPanel mazePanel;
 	int keyPressed;
 
-
 	public Display(Maze theMaze) throws IOException {
 
 		myMazeFrame = new JFrame("Maze");
@@ -81,16 +80,14 @@ public class Display implements KeyListener {
 		myMazeFrame.setUndecorated(true);
 		myMazeFrame.setVisible(true);
 		myMazeFrame.toFront();
-		myMazeFrame.setDefaultCloseOperation(myMazeFrame.DISPOSE_ON_CLOSE);
+		myMazeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		myQuestionFrame = new JFrame("Question");
-		myQuestionFrame.setDefaultCloseOperation(myQuestionFrame.DISPOSE_ON_CLOSE);
+		myQuestionFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		myQuestionFrame.setResizable(false);
 		myPauseFrame = new JFrame("Pause");
 		buildPauseFrame();
-		myPauseFrame.setDefaultCloseOperation(myPauseFrame.DISPOSE_ON_CLOSE);
+		myPauseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		myWindow = new JWindow(myMazeFrame);
-
-
 
 	}
 
@@ -155,7 +152,7 @@ public class Display implements KeyListener {
 					try {
 						howToFrame.getContentPane().removeAll();
 						howToFrame.getContentPane().setLayout(null);
-						howToFrame.setDefaultCloseOperation(howToFrame.DISPOSE_ON_CLOSE);
+						howToFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 						JLabel overlay = new JLabel("");
 						overlay.setIcon(new ImageIcon(ImageIO.read(new File("./images/howToP2Overlay.png"))));
@@ -469,7 +466,7 @@ public class Display implements KeyListener {
 		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				
+
 				int confirmed = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit the program?",
 						"Exit Program Message Box", JOptionPane.YES_NO_OPTION);
 
@@ -510,7 +507,7 @@ public class Display implements KeyListener {
 			}
 		});
 
-		winFrame.setDefaultCloseOperation(winFrame.EXIT_ON_CLOSE);
+		winFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		winFrame.add(highPriest, BorderLayout.CENTER);
 		winFrame.add(endGame, BorderLayout.SOUTH);
 		winFrame.add(winner, BorderLayout.NORTH);

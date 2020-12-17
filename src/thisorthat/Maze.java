@@ -30,10 +30,11 @@ public class Maze implements Serializable {
 	 * whether or not the player in the Maze currently has a key
 	 */
 	private boolean hasKey; 
-	
+	/*
+	 * Size of the maze (width and height)
+	 */
 	private static final int MAZE_SIZE = 9;
-	private static final int CENTER = 4;
-
+	
 	/*
 	 * Constructor for a Maze
 	 * @param theRooms the 2-D array of rooms to compose the Maze
@@ -47,11 +48,9 @@ public class Maze implements Serializable {
 		this.myXPosition = theXPosition;
 		this.hasKey = theKeyStatus;
 	}
+
 	/*
-	 * XXX constructor for Maze for use in tests
-	 */
-	/*
-	 * XXX constructor for Maze for use in tests
+	 * Constructor for Maze for use in tests
 	 */
 	public Maze() {
 		Room[][] maze = new Room[MAZE_SIZE][MAZE_SIZE];
@@ -60,7 +59,7 @@ public class Maze implements Serializable {
 		int keyY = generateRandomTen();
 		int goalX = generateRandomTen();
 		int goalY = generateRandomTen();
-		// loop for creating a random 10x10 maze
+		// loop for creating a random  maze with dimensions MAZE_SIZE x MAZE_SIZE 
 		for(int i = 0; i < MAZE_SIZE; i++) {
 			for(int j = 0; j < MAZE_SIZE; j++) {
 				// make key room
@@ -68,7 +67,7 @@ public class Maze implements Serializable {
 					maze[i][j] = new Room(new Question(), false, false, false, true);
 				} else if (i == goalX && j == goalY) { // make goal room
 					maze[i][j] = new Room(new Question(), false, false, true, false);
-				} else if (i == CENTER && j == CENTER) { // make start room
+				} else if (i == MAZE_SIZE/2 && j == MAZE_SIZE/2) { // make start room
 					maze[i][j] = new Room(new Question(), true, false, false, false);
 				} else {
 					// make a random question room
@@ -77,8 +76,8 @@ public class Maze implements Serializable {
 			}
 		}
 		this.myRooms = maze;
-		this.myYPosition = CENTER;
-		this.myXPosition = CENTER;
+		this.myYPosition =  MAZE_SIZE/2;
+		this.myXPosition = MAZE_SIZE/2;
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class Maze implements Serializable {
 	int generateRandomTen() {
 		Random rand = new Random();
 		int randPosition = rand.nextInt(8);
-		while(randPosition == CENTER) {
+		while(randPosition == MAZE_SIZE/2) {
 			randPosition = rand.nextInt(8);
 		}
 		return randPosition;

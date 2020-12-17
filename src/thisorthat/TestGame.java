@@ -2,8 +2,7 @@ package thisorthat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.Robot;
-import java.awt.event.InputEvent;
+
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,12 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
-import java.util.Scanner;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +20,7 @@ class TestGame {
 Maze currentMaze;
 Game currentGame;
 Display currentDisplay;
-Scanner scan = new Scanner(System.in);
+
 	/*
 	 * Construct Test maze with this layout before each test
 	 * QGQ
@@ -66,11 +62,8 @@ Scanner scan = new Scanner(System.in);
 		currentGame = new Game(currentMaze);
 	}
 
-	@AfterEach
-	void tearDown() throws Exception {
-		//TODO fix this
-	}
-
+	//TODO This test fails because the player move's to the goal position. The Maze doesn't update once the goal is reached,
+	//which isn't a problem, but the test fails because of this
 	@Test
 	void testRecieveMovementSelectionUp() {
 		currentGame.verifyAction(KeyEvent.VK_KP_UP);

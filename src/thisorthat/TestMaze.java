@@ -20,7 +20,7 @@ class TestMaze {
 	Room testRoomGullenge;
 	/*
 	 * 
-	 * Key for all mazes
+	 * Key for mazes
 	 * K = Key Room
 	 * P = Player Position
 	 * C = Cleared Room

@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
+
 /*
  * Game is trivia maze program where players navigate to the exit of a maze
  * by successfully answering trivia questions.
@@ -15,7 +15,7 @@ public class Game {
 	/*
 	 * Key Event code for up arrow key
 	 */
-	public static final int UP =  	38;
+	public static final int UP = 38;
 	/*
 	 * Key Event code for right arrow key
 	 */
@@ -48,7 +48,7 @@ public class Game {
 	 * int to represent selecting Exit option
 	 */
 	public static final int EXIT = 8;
-	/*	
+	/*
 	 * The Maze the user will navigate through
 	 */
 	private Maze myMaze;
@@ -57,8 +57,10 @@ public class Game {
 	 */
 	private Display myDisplay;
 	private boolean isFinished = false;
+
 	/*
 	 * Constructor for a Game
+	 * 
 	 * @param theMaze theMaze to be used when
 	 */
 	public Game(Maze theMaze) {
@@ -76,7 +78,7 @@ public class Game {
 	 * action and calls appropriate method, and repeats until goal is reached or
 	 * inaccessible.
 	 */
-	void playGame() throws IOException  {
+	void playGame() throws IOException {
 		int selectedAction;
 		int pauseSelection;
 		while (!this.isFinished) {
@@ -86,43 +88,45 @@ public class Game {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//get action from GUI
+			// get action from GUI
 			selectedAction = myDisplay.acceptMazeInput();
-			//check if the action is valid, if so perform
-			//if pausing, perform selected pause function
-			if(selectedAction == ESCAPE) {
+			// check if the action is valid, if so perform
+			// if pausing, perform selected pause function
+			if (selectedAction == ESCAPE) {
 				pauseSelection = myDisplay.showPauseMenu();
 				performPauseSelection(pauseSelection);
-				if(pauseSelection == LOAD) {
+				if (pauseSelection == LOAD) {
 					myDisplay.showMaze(this.myMaze);
 				}
 			}
-			//if moving
+			// if moving
 			else {
 				this.verifyAction(selectedAction);
-				//check if game is over, either by reaching goal or locking off path to goal
+				// check if game is over, either by reaching goal or locking off path to goal
 				this.isFinished = this.myMaze.checkWinCondition();
-				if(!this.isFinished) {
+				if (!this.isFinished) {
 					this.isFinished = !this.myMaze.checkWinPossible();
 				}
-			}	
+			}
 		}
 		myDisplay.showMaze(this.myMaze);
-		//if at goal, display win screen
-		if(this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal()) {
+		// if at goal, display win screen
+		if (this.myMaze.getMyRooms()[this.myMaze.getMyYPosition()][this.myMaze.getMyXPosition()].getIsGoal()) {
 			this.myDisplay.displayWinScreen();
-			System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA"); 
+			System.out.println("\nTHE GOAL HAS BEEN REACHED. YOU ARE THE NEW HIGH PRIEST OF IKEA");
 		}
-		//display winScreen
+		// display winScreen
 		else {
 			this.myDisplay.displayLoseScreen();
 		}
 	}
 	/*
-	 * Verifies if the action the user is attempting to make matches the options available to the user,
-	 * and calls the appropriate method of the action is valid.
-	 * @param theSelectedDirection the direction relative to the player's current coordinates the
-	 * player is attempting to move to
+	 * Verifies if the action the user is attempting to make matches the options
+	 * available to the user, and calls the appropriate method of the action is
+	 * valid.
+	 * 
+	 * @param theSelectedDirection the direction relative to the player's current
+	 * coordinates the player is attempting to move to
 	 */
 
 	void verifyAction(int theSelectedDirection) {
@@ -143,7 +147,7 @@ public class Game {
 			dx--;
 			break;
 		case ESCAPE:
-			
+
 		}
 		// performAction if InBounds
 		if (x + dx >= 0 && x + dx <= this.myMaze.getMyRooms()[0].length - 1 && y + dy >= 0
@@ -153,19 +157,22 @@ public class Game {
 	}
 
 	/*
-	 * Handle the player attempting to access a room, calling the appropriate method based on the player's key status
-	 * and the fields of the room the player is attempting to access
-	 * @param theDY the difference in Y position from the player's current Y Position in the maze to the room they are
+	 * Handle the player attempting to access a room, calling the appropriate method
+	 * based on the player's key status and the fields of the room the player is
 	 * attempting to access
-	 * @param theDX the difference in X position from the player's current X Position in the maze to the room they are
-	 * attempting to access
+	 * 
+	 * @param theDY the difference in Y position from the player's current Y
+	 * Position in the maze to the room they are attempting to access
+	 * 
+	 * @param theDX the difference in X position from the player's current X
+	 * Position in the maze to the room they are attempting to access
 	 */
 	void performAction(int theDY, int theDX) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() + theDY][this.myMaze.getMyXPosition()
 				+ theDX];
 		boolean moveRooms = false;
 
-		//if room is freely accessible, move there
+		// if room is freely accessible, move there
 		if (attemptedRoom.getIsAcessible()) {
 			moveRooms = true;
 			if (attemptedRoom.getIsGoal())
@@ -189,11 +196,12 @@ public class Game {
 			this.myMaze.useKey();
 			this.myMaze.obtainKey();
 		}
-		
+
 	}
 
 	/*
 	 * Calls methods available from pause menu based on thePauseSelection
+	 * 
 	 * @param thePauseSelection identifies which pause menu function to call
 	 */
 	void performPauseSelection(int thePauseSelection) {
@@ -211,7 +219,7 @@ public class Game {
 			break;
 		}
 	}
-	
+
 	/*
 	 * Saves the Game state to triviaMaze.ser
 	 */
@@ -228,7 +236,7 @@ public class Game {
 			i.printStackTrace();
 		}
 	}
-	
+
 	/*
 	 * Loads the Game state saved in triviaMaze.ser
 	 */
@@ -251,8 +259,9 @@ public class Game {
 		}
 	}
 
-	
-	//TODO Exit Game needs to be a window in GUI, not use the console
+	/*
+	 * Exit the currently executing Game 
+	 */
 	void exitGame() {
 		System.exit(0);
 	}

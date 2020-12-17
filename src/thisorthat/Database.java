@@ -16,7 +16,7 @@ import java.util.Map;
 import org.sqlite.SQLiteDataSource;
 
 public class Database implements Serializable {
-	
+
 	/**
 	 * Generated serializable ID.
 	 */
@@ -24,14 +24,14 @@ public class Database implements Serializable {
 	/*
 	 * 
 	 */
-	private Map<String, List<String>> myDatabase = new HashMap<>();	
-	
+	private Map<String, List<String>> myDatabase = new HashMap<>();
+
 	/*
 	 * 
 	 */
 	public Database() {
 		SQLiteDataSource data = null;
-		
+
 		final List<List<String>> questions = new ArrayList<>();
 		try (BufferedReader read = new BufferedReader(new FileReader("Questions.csv"));) {
 			String line;
@@ -42,8 +42,7 @@ public class Database implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		try {
 			data = new SQLiteDataSource();
 			data.setUrl("jdbc:sqlite:questions.db");
@@ -51,48 +50,41 @@ public class Database implements Serializable {
 			e.printStackTrace();
 			System.exit(0);
 		}
-	
-		String query = "CREATE TABLE IF NOT EXISTS questions ( " +
-				"TOPIC , " +
-				"PROMPT, ANSWER_0,"
-				+ "ANSWER_1 , "
-				+ "CORRECT_ANSWER_INDEX)";	
-		try ( Connection conn = data.getConnection();
-				Statement stmt = conn.createStatement(); ) {
+
+		String query = "CREATE TABLE IF NOT EXISTS questions ( " + "TOPIC , " + "PROMPT, ANSWER_0," + "ANSWER_1 , "
+				+ "CORRECT_ANSWER_INDEX)";
+		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
 			int rv = stmt.executeUpdate(query);
-			//System.out.println( "executeUpdate() returned " + rv );
-	      } catch ( SQLException e ) {
-	    	  e.printStackTrace();
-	    	  System.exit(0);
-    	  }
-		
-		List<String> queries = new ArrayList<>();
-		for(List<String> listS: questions.subList(1, questions.size())) {
-			queries.add("INSERT INTO questions ( TOPIC, PROMPT, ANSWER_0, ANSWER_1, CORRECT_ANSWER_INDEX ) "
-					+ "VALUES ('"+ listS.get(0) +"', '"+ listS.get(1) +
-					"', '"+ listS.get(2) +"', '"+ listS.get(3) +"', '" +
-					listS.get(4) + "' )");
+			System.out.println( "executeUpdate() returned " + rv );
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.exit(0);
 		}
-		
-		try (Connection conn = data.getConnection();
-				Statement stmt = conn.createStatement();) {
+
+		List<String> queries = new ArrayList<>();
+		for (List<String> listS : questions.subList(1, questions.size())) {
+			queries.add("INSERT INTO questions ( TOPIC, PROMPT, ANSWER_0, ANSWER_1, CORRECT_ANSWER_INDEX ) "
+					+ "VALUES ('" + listS.get(0) + "', '" + listS.get(1) + "', '" + listS.get(2) + "', '" + listS.get(3)
+					+ "', '" + listS.get(4) + "' )");
+		}
+
+		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
 //			int rv = 0;
-			for (String s: queries) {
+			for (String s : queries) {
 				int rv = stmt.executeUpdate(s);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
-		try(Connection conn = data.getConnection();
-				Statement stmt = conn.createStatement();) {
-			
+
+		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement();) {
+
 			query = "SELECT * FROM questions";
-			
+
 			ResultSet rs = stmt.executeQuery(query);
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				String topic = rs.getString("TOPIC");
 				String prompt = rs.getString("PROMPT");
 				String answer1 = rs.getString("ANSWER_0");
@@ -107,12 +99,13 @@ public class Database implements Serializable {
 					myDatabase.put(prompt, info);
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
 	}
+
 	/*
 	 * 
 	 */

@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
+
 
 public class Display implements KeyListener {
 	/*
@@ -103,7 +105,6 @@ public class Display implements KeyListener {
 		System.out.println("\nChoose which direction to go: \n");
 		myMazeFrame.toFront();
 		myMazeFrame.requestFocus();
-
 		this.keyPressed = -1;
 		int selectedAction = -1;
 		while (selectedAction != LEFT && selectedAction != RIGHT && selectedAction != UP && selectedAction != DOWN
@@ -324,7 +325,6 @@ public class Display implements KeyListener {
 		}
 		unanswered = true;
 		return correct;
-
 	}
 
 	public int showPauseMenu() {
@@ -380,7 +380,6 @@ public class Display implements KeyListener {
 		save.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				// REPLACE WITH ACTUAL SAVE ACTION WHEN I HAVE IT
 				pauseSelection = SAVE;
 				myPauseFrame.dispose();
 				JOptionPane.showMessageDialog(null, "Game saved!");
@@ -542,5 +541,4 @@ public class Display implements KeyListener {
 		theFrame.requestFocus();
 		theFrame.setDefaultCloseOperation(0);
 	}
-
 }

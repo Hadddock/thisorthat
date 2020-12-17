@@ -18,7 +18,20 @@ class TestMaze {
 	Maze testMaze;
 	Room[][] testRooms;
 	Room testRoomGullenge;
-
+	/*
+	 * 
+	 * Key for all mazes
+	 * K = Key Room
+	 * P = Player Position
+	 * C = Cleared Room
+	 * Q = Question Room
+	 * L = Locked Room
+	 * 
+	 * Default maze layout for testing
+	 * QGQ 
+	 * KPQ
+	 * QLQ
+	 */
 	@BeforeEach
 	void buildUp() throws Exception {
 		testRooms = new Room[3][3];
@@ -42,12 +55,6 @@ class TestMaze {
 		testMaze = new Maze(testRooms, 1, 1, false);
 	}
 
-	/*
-	 * Construct Test maze with this layout before each test QGQ KPQ QLQ
-	 * 
-	 * Q = Question Room K = Key Room G = Goal Room P = Player's current position,
-	 * accessible cleared room.
-	 */
 	@Test
 	void testCheckWinPossible() throws Exception {
 		assertTrue(testMaze.checkWinPossible());
@@ -62,6 +69,45 @@ class TestMaze {
 		testRooms[1][2] = new Room(new Question(), false, true, false, false);
 		testMaze = new Maze(testRooms, 2, 2, false);
 		assertFalse(testMaze.checkWinPossible());
+	}
+	
+	@Test
+	void testCheckWinPossible3() {
+				// Make start room bottom right corner
+				testRooms[2][2] = new Room(new Question(), true, false, false, false);
+				
+				//make left adjacent room unlocked
+				testRooms[2][1] = new Room(new Question(), true, false, false, false);
+				// make line of locked rooms blocking exit
+				testRooms[1][2] = new Room(new Question(), false, true, false, false);
+				testRooms[1][1] = new Room(new Question(), false, true, false, false);
+				testRooms[1][0] = new Room(new Question(), false, true, false, false);
+				// make key room
+				testRooms[2][0] = new Room(new Question(), false, false, false, true);
+				testMaze = new Maze(testRooms, 2, 2, false);
+				assertTrue(testMaze.checkWinPossible());
+	}
+	/*
+	 * 
+	 * Check if win is possible when player has a key, and there is at most 
+	 * one locked room between the player and a potentially winnable Game state
+	 * without a key
+	 * 
+	 */
+	@Test
+	void testCheckWinPossible4() {
+				// Make start room bottom right corner
+				testRooms[2][2] = new Room(new Question(), true, false, false, true);
+				
+				// make line of locked rooms blocking exit
+				testRooms[1][2] = new Room(new Question(), false, true, false, false);
+				testRooms[1][1] = new Room(new Question(), false, true, false, false);
+				testRooms[1][0] = new Room(new Question(), false, true, false, false);
+				// make key room
+				testRooms[2][0] = new Room(new Question(), false, false, false, true);
+				testMaze = new Maze(testRooms, 2, 2, false);
+				testMaze.obtainKey();
+				assertTrue(testMaze.checkWinPossible());
 	}
 
 	@Test

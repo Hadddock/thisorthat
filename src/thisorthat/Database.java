@@ -56,11 +56,11 @@ public class Database implements Serializable {
 				"TOPIC , " +
 				"PROMPT, ANSWER_0,"
 				+ "ANSWER_1 , "
-				+ "CORRECT_ANSWER_INDEX)";
+				+ "CORRECT_ANSWER_INDEX)";	
 		try ( Connection conn = data.getConnection();
 				Statement stmt = conn.createStatement(); ) {
 			int rv = stmt.executeUpdate(query);
-			System.out.println( "executeUpdate() returned " + rv );
+			//System.out.println( "executeUpdate() returned " + rv );
 	      } catch ( SQLException e ) {
 	    	  e.printStackTrace();
 	    	  System.exit(0);

@@ -1,6 +1,9 @@
 package thisorthat;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /*
  * Question is an abstraction of a question, its potential answers, and its correct answer 
@@ -21,25 +24,30 @@ public class Question implements Serializable {
 	 * The correct subject's index in myAnswers.
 	 */
 	private int myCorrectAnswer;
+	/*
+	 * Random used to select random question from database
+	 */
+	private Random rand = new Random();
 
 	/*
-	 * XXX Default Constructor for testing purposes
+	 * The database of questions and answers
+	 */
+	private Database myDatabase = new Database();
+
+	/*
+	 * Default Constructor for testing purposes
 	 */
 	public Question() {
-		this.mySubject = "Gullunge";
-		this.myAnswers = new String[] { "An Ikea Product", "A Type of Cheese" };
-		this.myCorrectAnswer = 1;
+		List<String> keys = new ArrayList<String>(myDatabase.getDatabase().keySet());
+		int randomInt = rand.nextInt(keys.size());
+		String prompt = keys.get(randomInt);
+		List<String> questions = myDatabase.getDatabase().get(prompt);
+		this.mySubject = prompt;
+		this.myAnswers = new String[] { questions.get(1), questions.get(2) };
+		System.out.println(questions.get(1) + "," + questions.get(2));
+		this.myCorrectAnswer = Integer.valueOf(questions.get(3));
 	}
 
-	/*
-	 * Constructor for Question
-	 * 
-	 * @param theSubject the String assigned to mySubject
-	 * 
-	 * @param theAnswers the String array assigned to myAnswers
-	 * 
-	 * @param theCorrectAnswer the integer assigned to myCorrectAnswer
-	 */
 	public Question(String theSubject, String[] theAnswers, int theCorrectAnswer) {
 		this.mySubject = theSubject;
 		this.myAnswers = theAnswers;

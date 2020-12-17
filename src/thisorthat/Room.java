@@ -79,7 +79,7 @@ public class Room implements Serializable {
 	 * 
 	 * @param copyRoom the Room that will act as the basis for the new Room
 	 */
-	public Room(Room copyRoom) {
+	Room(Room copyRoom) {
 		this.myQuestion = copyRoom.getMyQuestion();
 		this.isAcessible = copyRoom.getIsAcessible();
 		this.isLocked = copyRoom.getIsLocked();
@@ -92,7 +92,7 @@ public class Room implements Serializable {
 	 * 
 	 * @return myQuestion
 	 */
-	public Question getMyQuestion() {
+	Question getMyQuestion() {
 		return myQuestion;
 	}
 

@@ -48,7 +48,7 @@ public class Game {
 	 * int to represent selecting Exit option
 	 */
 	public static final int EXIT = 8;
-	/*
+	/*	
 	 * The Maze the user will navigate through
 	 */
 	private Maze myMaze;
@@ -76,7 +76,7 @@ public class Game {
 	 * action and calls appropriate method, and repeats until goal is reached or
 	 * inaccessible.
 	 */
-	private void playGame() throws IOException  {
+	void playGame() throws IOException  {
 		int selectedAction;
 		int pauseSelection;
 		while (!this.isFinished) {
@@ -125,7 +125,7 @@ public class Game {
 	 * player is attempting to move to
 	 */
 
-	private void verifyAction(int theSelectedDirection) {
+	void verifyAction(int theSelectedDirection) {
 		int dy = 0, dx = 0;
 		int x = this.myMaze.getMyXPosition();
 		int y = this.myMaze.getMyYPosition();
@@ -160,7 +160,7 @@ public class Game {
 	 * @param theDX the difference in X position from the player's current X Position in the maze to the room they are
 	 * attempting to access
 	 */
-	private void performAction(int theDY, int theDX) {
+	void performAction(int theDY, int theDX) {
 		Room attemptedRoom = this.myMaze.getMyRooms()[this.myMaze.getMyYPosition() + theDY][this.myMaze.getMyXPosition()
 				+ theDX];
 		boolean moveRooms = false;
@@ -233,7 +233,7 @@ public class Game {
 	 * Loads the Game state saved in triviaMaze.ser
 	 */
 	void loadGame() {
-		Maze m = null;
+		Maze m;
 		try {
 			FileInputStream fileIn = new FileInputStream("./triviaMaze.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -253,7 +253,7 @@ public class Game {
 
 	
 	//TODO Exit Game needs to be a window in GUI, not use the console
-	private void exitGame() {
+	void exitGame() {
 		System.exit(0);
 	}
 

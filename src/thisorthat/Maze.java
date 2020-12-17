@@ -5,12 +5,12 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 
  * Maze is an abstraction of a collection of rooms and the status of a player in
  * the Maze for use in a Trivia maze program.
- *
  */
 @SuppressWarnings("serial")
 public class Maze implements Serializable {
@@ -30,6 +30,9 @@ public class Maze implements Serializable {
 	 * whether or not the player in the Maze currently has a key
 	 */
 	private boolean hasKey; 
+	
+	private static final int MAZE_SIZE = 9;
+	private static final int CENTER = 4;
 
 	/*
 	 * Constructor for a Maze
@@ -47,30 +50,48 @@ public class Maze implements Serializable {
 	/*
 	 * XXX constructor for Maze for use in tests
 	 */
+	/*
+	 * XXX constructor for Maze for use in tests
+	 */
 	public Maze() {
-		Room[][] testRooms = new Room[3][3];
-		// make Gullunge/basic question room
-		Room testRoomGullenge = new Room(new Question(), false, false, false, false);
-		testRooms[0][0] = new Room(testRoomGullenge);
-		testRooms[0][2] = new Room(testRoomGullenge);
-		testRooms[1][2] = new Room(testRoomGullenge);
-		testRooms[2][0] = new Room(testRoomGullenge);
-		testRooms[2][2] = new Room(testRoomGullenge);
-		//make start room
-		testRooms[1][1] = new Room(new Question(), true, false, false, false);
+		Room[][] maze = new Room[MAZE_SIZE][MAZE_SIZE];
+		Random rand = new Random();
+		int keyX = generateRandomTen();
+		int keyY = generateRandomTen();
+		int goalX = generateRandomTen();
+		int goalY = generateRandomTen();
+		// loop for creating a random 10x10 maze
+		for(int i = 0; i < MAZE_SIZE; i++) {
+			for(int j = 0; j < MAZE_SIZE; j++) {
+				// make key room
+				if((i == keyX && j == keyY)) {
+					maze[i][j] = new Room(new Question(), false, false, false, true);
+				} else if (i == goalX && j == goalY) { // make goal room
+					maze[i][j] = new Room(new Question(), false, false, true, false);
+				} else if (i == CENTER && j == CENTER) { // make start room
+					maze[i][j] = new Room(new Question(), true, false, false, false);
+				} else {
+					// make a random question room
+					maze[i][j] = new Room(new Question(),false,false,false,false);
+				}
+			}
+		}
+		this.myRooms = maze;
+		this.myYPosition = CENTER;
+		this.myXPosition = CENTER;
+	}
 
-		// make goal room
-		testRooms[0][1] = new Room(new Question(), true, false, true, false);
-		// make key room
-		testRooms[1][0] = new Room(new Question(), false, false, false, true);
-
-		// make locked room
-		testRooms[2][1] = new Room(new Question(), false, true, false, false);
-
-		//TODO replace null with the test display variable
-		this.myRooms = testRooms;
-		this.myYPosition = 1;
-		this.myXPosition = 1;
+	/**
+	 * helper method to generate key and goal positions
+	 * @return random int between 0 and 8
+	 */
+	int generateRandomTen() {
+		Random rand = new Random();
+		int randPosition = rand.nextInt(8);
+		while(randPosition == CENTER) {
+			randPosition = rand.nextInt(8);
+		}
+		return randPosition;
 	}
 
 	
@@ -243,14 +264,7 @@ public class Maze implements Serializable {
 			this.hasKey = false;
 		}
 	}
-	/*
-	 * XXX Replaced by obtainKey
-	 * Setter for hasKey
-	 * @param the new boolean value assigned to hasKey
-	 */
-	void setHasKey(boolean theKeyStatus) {
-		this.hasKey = theKeyStatus;
-	}
+
 	/*
 	 * Getter for myRooms
 	 * @return myRooms

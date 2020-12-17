@@ -7,7 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="D:/Git/thisorthat/src/thisorthat/externalResources/sqlite-jdbc-master.zip"/>
-	<classpathentry kind="lib" path="src/thisorthat/externalResources/sqlite-jdbc-master.zip"/>
+	<classpathentry kind="lib" path="src/thisorthat/externalResources/sqlite-jdbc-3.32.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

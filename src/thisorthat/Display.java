@@ -466,12 +466,12 @@ public class Display implements KeyListener {
 		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				pauseSelection = EXIT;
+				
 				int confirmed = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit the program?",
 						"Exit Program Message Box", JOptionPane.YES_NO_OPTION);
 
 				if (confirmed == JOptionPane.YES_OPTION) {
-					System.exit(0);
+					pauseSelection = EXIT;
 				} else {
 					pauseSelection = RESUME;
 				}

@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Question is an abstraction of a question, its potential answers, and its correct answer 
  * for use in a Trivia maze program.
  */
+@SuppressWarnings("serial")
 public class Question implements Serializable {
 	/*
 	 * The Subject to be placed in one of the categories in myAnswers

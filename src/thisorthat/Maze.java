@@ -12,6 +12,7 @@ import java.util.List;
  * the Maze for use in a Trivia maze program.
  *
  */
+@SuppressWarnings("serial")
 public class Maze implements Serializable {
 	/*
 	 * 2-D array of rooms composing the Maze
@@ -196,13 +197,11 @@ public class Maze implements Serializable {
 	List<Room> getNeighbors(int theYPosition, int theXPosition) {
 		List<Room> returnValue = new LinkedList<Room>();
 		if(checkInBounds(theYPosition-1,theXPosition)) {
-			
 			this.myRooms[theYPosition-1][theXPosition].setMyYCoordinate(theYPosition-1);
 			this.myRooms[theYPosition-1][theXPosition].setMyXCoordinate(theXPosition);
 			returnValue.add(this.myRooms[theYPosition-1][theXPosition]);
 		}
 		if(checkInBounds(theYPosition,theXPosition+1)) {
-			
 			this.myRooms[theYPosition][theXPosition+1].setMyYCoordinate(theYPosition);
 			this.myRooms[theYPosition][theXPosition+1].setMyXCoordinate(theXPosition+1);
 			returnValue.add(this.myRooms[theYPosition][theXPosition+1]);
@@ -242,16 +241,15 @@ public class Maze implements Serializable {
 			this.myRooms[myYPosition][myXPosition].setIsLocked(false);
 			this.myRooms[myYPosition][myXPosition].setIsAcessible(true);
 			this.hasKey = false;
-			
 		}
 	}
 	/*
+	 * XXX Replaced by obtainKey
 	 * Setter for hasKey
 	 * @param the new boolean value assigned to hasKey
 	 */
 	void setHasKey(boolean theKeyStatus) {
 		this.hasKey = theKeyStatus;
-		
 	}
 	/*
 	 * Getter for myRooms

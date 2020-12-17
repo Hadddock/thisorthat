@@ -1,10 +1,12 @@
 package thisorthat;
+
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,20 +19,8 @@ class TestMaze {
 	Room[][] testRooms;
 	Room testRoomGullenge;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-	}
-	
 	@BeforeEach
-	void buildUp() throws Exception{
+	void buildUp() throws Exception {
 		testRooms = new Room[3][3];
 		// make Gullunge/basic question room
 		testRoomGullenge = new Room(new Question(), false, false, false, false);
@@ -49,9 +39,8 @@ class TestMaze {
 
 		// make locked room
 		testRooms[2][1] = new Room(new Question(), false, true, false, false);
-		testMaze = new Maze(testRooms, 2, 2, false);
+		testMaze = new Maze(testRooms, 1, 1, false);
 	}
-
 
 	/*
 	 * Construct Test maze with this layout before each test QGQ KPQ QLQ
@@ -74,16 +63,17 @@ class TestMaze {
 		testMaze = new Maze(testRooms, 2, 2, false);
 		assertFalse(testMaze.checkWinPossible());
 	}
-	
+
 	@Test
 	void testCheckWinCondition() {
 		// Check win condition false when not at goal state
 		assertFalse(testMaze.checkWinCondition());
-		//set current position to be goal state
-		testRooms[1][1] =  new Room(new Question(), true, false, true, false);
+		// set current position to be goal state
+		testRooms[1][1] = new Room(new Question(), true, false, true, false);
 		testMaze = new Maze(testRooms, 1, 1, false);
 		assertTrue(testMaze.checkWinCondition());
 	}
+
 	@Test
 	void testCheckInBounds() {
 		assertFalse(testMaze.checkInBounds(-1, 0));
@@ -95,33 +85,100 @@ class TestMaze {
 		assertTrue(testMaze.checkInBounds(0, 0));
 		assertTrue(testMaze.checkInBounds(2, 2));
 	}
-	
+
 	@Test
 	void testGetMyYPosition() {
-		assertEquals(testMaze.getMyYPosition(),1);
+		assertEquals(testMaze.getMyYPosition(), 1);
 	}
-	
+
 	@Test
 	void testGetMyXPosition() {
-		assertEquals(testMaze.getMyXPosition(),1);
+		assertEquals(testMaze.getMyXPosition(), 1);
 	}
+
 	@Test
 	void testSetMyXPosition() {
 		testMaze.setMyXPosition(0);
-		assertEquals(testMaze.getMyXPosition(),0);
+		assertEquals(testMaze.getMyXPosition(), 0);
+		assertNotEquals(testMaze.getMyXPosition(), 1);
 	}
-	
+
 	@Test
 	void testSetMyYPosition() {
 		testMaze.setMyYPosition(0);
-		assertEquals(testMaze.getMyYPosition(),0);
+		assertEquals(testMaze.getMyYPosition(), 0);
+		assertNotEquals(testMaze.getMyYPosition(), 1);
 	}
-	
-	
 
-	
-	
-	
-	
+	@Test
+	void testObtainKey() {
+		// try and obtain key from room that isn't a key room
+		testMaze.obtainKey();
+		assertFalse(testMaze.getHasKey());
+		testMaze.setMyXPosition(0);
+		testMaze.obtainKey();
+		assertTrue(testMaze.getHasKey());
+	}
+
+	@Test
+	void testGetHasKey() {
+		assertFalse(testMaze.getHasKey());
+		// move to key position
+		testMaze.setMyXPosition(0);
+		testMaze.obtainKey();
+		assertTrue(testMaze.getHasKey());
+	}
+
+	@Test
+	void testUseKey() {
+		testMaze.setMyXPosition(0);
+		testMaze.obtainKey();
+		assertTrue(testMaze.getHasKey());
+		testMaze.useKey();
+		// trying to use key on unlocked room intentionally doesn't work
+		assertTrue(testMaze.getHasKey());
+		assertFalse(testMaze.getMyRooms()[testMaze.getMyYPosition()][testMaze.getMyXPosition()].getIsLocked());
+		// move to locked room
+		testMaze.setMyXPosition(1);
+		testMaze.setMyYPosition(2);
+		// check that the room is locked before using
+		assertTrue(testMaze.getMyRooms()[testMaze.getMyYPosition()][testMaze.getMyXPosition()].getIsLocked());
+		// use the key, lose key, room unlocks
+		testMaze.useKey();
+		assertFalse(testMaze.getHasKey());
+		assertFalse(testMaze.getMyRooms()[testMaze.getMyYPosition()][testMaze.getMyXPosition()].getIsLocked());
+	}
+
+	@Test
+	void testGetMyRooms() {
+		assertEquals(testMaze.getMyRooms(), testRooms);
+	}
+
+	@Test
+	void testGetNeighbors() {
+		List<Room> testList = new LinkedList<Room>();
+		testList.add(testRooms[0][1]);
+		testList.add(testRooms[1][2]);
+		testList.add(testRooms[2][1]);
+		testList.add(testRooms[1][0]);
+
+		List<Room> testList2 = testMaze.getNeighbors(testMaze.getMyYPosition(), testMaze.getMyXPosition());
+		for (int i = 0; i < testList2.size(); i++) {
+			assertEquals(testList.get(i), testList2.get(i));
+		}
+		testList.clear();
+		testList2.clear();
+		// add corner rooms to list
+		testList.add(testRooms[0][1]);
+		testList.add(testRooms[1][0]);
+		// move to corner
+		testMaze.setMyXPosition(0);
+		testMaze.setMyYPosition(0);
+		testList2 = testMaze.getNeighbors(testMaze.getMyYPosition(), testMaze.getMyXPosition());
+		for (int i = 0; i < testList2.size(); i++) {
+			assertEquals(testList.get(i), testList2.get(i));
+		}
+
+	}
 
 }

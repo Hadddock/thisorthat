@@ -1,13 +1,13 @@
 package thisorthat;
 
 import java.io.Serializable;
-import java.util.Observable;
 
 /**
  * 
  * Room is an abstraction of a room for use in a Trivia maze program.
  *
  */
+@SuppressWarnings("serial")
 public class Room implements Serializable {
 
 	/**
@@ -50,7 +50,7 @@ public class Room implements Serializable {
 	 * @param theAcessibleStatus if the player is able to freely move to this Room
 	 * @param theLockedStatus if the Room is locked
 	 * @param theGoalStatus if this Room is a Goal Room
-	 * 
+	 * @param theKeyRoomStatus if this Room is a Key Room
 	 */
 
 	public Room(Question theQuestion, boolean theAcessibleStatus, boolean theLockedStatus, boolean theGoalStatus,

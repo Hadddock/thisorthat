@@ -22,7 +22,6 @@ class TestRoom {
 		accessibleRoom = new Room(new Question(), true, false, false, false);
 		goalRoom = new Room(new Question(), true, false, true, false);
 		keyRoom = new Room(new Question(), false, false, false, true);
-
 	}
 
 	@Test

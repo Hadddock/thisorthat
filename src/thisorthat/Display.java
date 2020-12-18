@@ -24,9 +24,9 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
 /**
+ * Display is the GUI implementation of the IKEA trivia this or that maze.
  * 
  * @author Edward Robinson, Justin Haddock, and Elisabeth Jewett
- *
  */
 public class Display implements KeyListener {
 	/*
